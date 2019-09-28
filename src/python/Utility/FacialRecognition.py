@@ -10,17 +10,22 @@ class FacialRecognition:
         self.image_directory = image_directory
 
     def compare_faces(image_one_name, image_two_name):
-        """ 
-        Compares the face found in image_one_name && image_two_name to determine if they are the same or not 
+        """
+    Compares the face found in image_one_name and image_two_name to
+        determine if they are the same or not.
 
-        :param str image_one_name: file name of the first image e.g. example1.jpg
-        :param str image_two_name: file name of the first image e.g. example2.jpg
-        :return: boolean value representing if the two images presented contain the same person.
+        :param str image_one_name: file name of the first image
+         e.g. example1.jpg
+        :param str image_two_name: file name of the second image
+         e.g. example2.jpg
+        :return: boolean value representing if the two images presented
+         contain the same person/face.
         """
         image_one_encoding = self.__get_image_encoding(image_one_name)
         image_two_encoding = self.__get_image_encoding(image_two_name)
 
-        return face_recognition.compare_faces(image_one_encoding, image_two_encoding)[0]
+        return face_recognition.compa re_faces(image_one_encoding,
+                                               image_two_encoding)[0]
 
     def __get_image_encoding(self, image_name, allowMultiple=false):
         image = face_recognition.load_image_file(image_one_name)
