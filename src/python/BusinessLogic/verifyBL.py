@@ -4,6 +4,7 @@ from Utility.FacialRecognition import FacialRecognition
 import Utility.OCR as OCR
 from Utility.TextManipulation import extract_driving_license_info
 import io
+import time
 
 
 def verify(passport_image_bytes, user_image_bytes,
@@ -43,12 +44,22 @@ def __verify_age(passport_image_bytes, driving_license_image):
     driving license and the passport.
 
     '''
-
     passport_mrz_data = __get_passport_info(passport_image_bytes)
+
+    if(passport_mrz_data.valid_score < 50):
+        return False
+
     user_license_dob, user_license_number = __get_license_info(
         driving_license_image)
 
-    # TODO: get the information out of the MRZ and compare the two dates. possibly try and give this a trial run.
+    # TODO: get the information out of the MRZ and compare the two dates.
+    # possibly try and give this a trial run.
+
+    passport_dob = passport_mrz_data.date_of_birth
+    # Add spaces after each 2 characters in the string
+    passport_dob = " ".join(s[i:i+2] for i in range(0, len(passport_dob), 2))
+    passport_dob = time.strptime(passport_dob, "%y %m %d")
+    license_dob = time.strptime(user_license_dob, "%d-%m-%y")
 
 
 def __get_passport_info(passport_image):
