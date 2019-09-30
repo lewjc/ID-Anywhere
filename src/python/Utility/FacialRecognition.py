@@ -24,7 +24,7 @@ class FacialRecognition:
         image_one_encoding = self.__get_image_encoding(image_one_name)
         image_two_encoding = self.__get_image_encoding(image_two_name)
 
-        return face_recognition.compa re_faces(image_one_encoding,
+        return face_recognition.compare_faces(image_one_encoding,
                                                image_two_encoding)[0]
 
     def __get_image_encoding(self, image_name, allowMultiple=false):
