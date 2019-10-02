@@ -14,7 +14,8 @@ def extract_driving_license_info(license_text):
 def extract_dob(license_text):
     license_text = str(license_text).trim()
     indicator_index = license_text.find("3.")
-    dob = license_text[indicator_index++:]
+    indicator_index += 1
+    dob = license_text[indicator_index:]
     dob = dob.replace(" ", "-")
     license_number_end = dob.rfind("-")
     dob = dob[:license_number_end].replace("-", "")
@@ -24,7 +25,8 @@ def extract_dob(license_text):
 def extract_driving_license_number(license_text):
     license_text = str(license_text).trim()
     indicator_index = license_text.find("5.")
-    license_number = license_text[indicator_index++:]
+    indicator_index += 1
+    license_number = license_text[indicator_index:]
     license_number = license_number.replace(" ", "-")
     license_number_end = license_number.rfind("-")
     license_number = license_number[:license_number_end].replace("-", "")

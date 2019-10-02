@@ -1,38 +1,38 @@
 from work.mongo import MongoWorkQueue
-from work.verifyprocess import VerifyProcess
+from work.verifyprocess import VerifyProcessWorker
 from multiprocessing import Process
+import sys
+import time
+import uuid
 
 
 class WorkFactory():
 
-    __process_pool = None
-    __work_queue = None
-    __max_workers = None
-    __job_sleep = 0
-    safe_exit = False
-    busy = not len(__process_pool) < __max_workers
+    __worker_pool = []
+    __worker_sleep = 0
+    __finalise_work = False
+    __workers = 0
 
-    def __init__(self, max_workers, job_sleep=60):
-        self.__work_queue = MongoWorkQueue()
-        self.__max_workers = max_workers
-        self.__process_pool = []
-        self.__job_sleep = job_sleep
+    def __init__(self, workers=3, worker_sleep=60):
+        self.__workers = workers
+        self.__worker_sleep = worker_sleep
+        print("[INITIALISED WORK FACTORY]")
 
     def initialise(self):
-        while True:
-            job = self.__work_queue.get_next_job()
 
-            if(job is None):
-                time.sleep(self.__job_sleep)
-                continue
+        print("[GENERATING WORKERS]")
 
-            self.__do_work(VerifyProcess(job, self.__on_work__finish))
+        for x in range(self.__workers):
+            uid = str(uuid.uuid4())
+            worker = VerifyProcessWorker(uid, self.__worker_sleep)
 
-    def __do_work(self, task, args):
-        if(self.busy):
-            new_proc = Process(target=(task), args=args)
-            new_proc.start()
-            self.__thread_pool.append(new_proc)
+            worker_proc = Process(target=worker.run,
+                                  args=(self.__finalise_work,))
+            worker_proc.start()
+            print("[CREATED WORKER {}]".format(uid))
+            self.__worker_pool.append(worker_proc)
 
-    def __on_work__finish(self, thread_idx):
-        self.__process_pool.pop(thread_idx)
+    def finish_work(self):
+        self.__finalise_work = True
+        for worker in self.__worker_pool:
+            worker.join()

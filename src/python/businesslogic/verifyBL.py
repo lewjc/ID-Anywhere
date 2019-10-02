@@ -1,19 +1,16 @@
 from PIL import Image
 from utility.ImageManipulation import ConvertImageToBW
-import utility.FacialRecognition as fr
+from utility.FacialRecognition import FacialRecognition
 from utility.TextManipulation import extract_driving_license_info
-from requests import post
-from utility.constants import UPDATE_USER_STATUS_URL
 import utility.OCR as OCR
 import io
 import time
 import re
 
-r_compiled = re.compile(r'^[A-Z9]{5}\d{6}[A-Z9]{2}\d$', re.X)
-
 
 def verify(passport_image_bytes, user_image_bytes,
            driving_license_image_bytes):
+    ''''''
     # Convert the byte strings to images
     passport_image = Image.open(io.BytesIO(passport_image_bytes))
     user_image = Image.open(io.BytesIO(user_image_bytes))
@@ -21,7 +18,6 @@ def verify(passport_image_bytes, user_image_bytes,
         io.BytesIO(driving_license_image_bytes))
 
     check_face_result = __check_face(passport_image, user_image)
-    print(check_face_result)
 
     if(check_face_result is bool):
         # Passed the first check, verify the user's face matches their
@@ -32,42 +28,15 @@ def verify(passport_image_bytes, user_image_bytes,
         return check_face_result
 
 
-def update_user_status(verified, response_message, guid):
-
-    data = {
-        "verified": verified,
-        "message": response_message,
-        "GUID": guid
-    }
-
-    try:
-        response = post(UPDATE_USER_STATUS_URL, verify=False, data=data)
-        if(response is None):
-            print("API Call error")
-
-        if(response.status_code == 200):
-            return
-        else:
-            print("status code returned {}. expected 200 OK".format(
-                response.status_code))
-    except Exception as e:
-        print(str(e))
-
-
 def __check_face(passport_image, user_image):
     try:
-        result = fr.compare_faces(passport_image, user_image),
-        if(result):
-            return (result, "Passport + Image identified")
-
-        return (result, "Passport + Image not identified")
-
+        fr = FacialRecognition()
+        return fr.compare_faces(passport_image, user_image)
     except Exception as e:
         # Get the error message, then return that from our endpoint with an
         # error stating that the user's picutre upload was unexceptable using
         # str(e)
-        print(e)
-        return (False, "Error")
+        return (False, str(e))
 
 
 def __verify_age(passport_image_bytes, driving_license_image):
@@ -78,7 +47,7 @@ def __verify_age(passport_image_bytes, driving_license_image):
     '''
     passport_mrz_data = __get_passport_info(passport_image_bytes)
 
-    if(passport_mrz_data.valid_score < 50 or
+    if(passport_mrz_data.valid_score < 50 or 
        not passport_mrz_data.date_of_birth_valid):
         return False
 
@@ -90,8 +59,8 @@ def __verify_age(passport_image_bytes, driving_license_image):
 
     passport_dob = passport_mrz_data.date_of_birth
     # Add spaces after each 2 characters in the string
-    passport_dob = " ".join(passport_dob[i:i+2]
-                            for i in range(0, len(passport_dob), 2))
+    passport_dob =
+    " ".join(passport_dob[i:i+2] for i in range(0, len(passport_dob), 2))
 
     passport_dob = time.strptime(passport_dob, "%y %m %d")
     license_dob = time.strptime(user_license_dob, "%d-%m-%y")
@@ -125,4 +94,6 @@ def __get_license_info(driving_license_image):
 
 
 def __verify_driving_license_number(license_number):
+    license_regex = (r'^[A-Z9]{5}\d{6}[A-Z9]{2}\d$')
+    r_compiled = re.compile(license_regex, re.X)
     return re.match(r_compiled, license_number)

@@ -16,4 +16,3 @@ def read_mrz(image):
     the MRZ is represented. (None if no MRZ detected.)
     '''
     return read_mrz(image)
-    
