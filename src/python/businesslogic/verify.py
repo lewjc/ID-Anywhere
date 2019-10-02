@@ -2,10 +2,14 @@ from PIL import Image
 from utility.ImageManipulation import ConvertImageToBW
 from utility.FacialRecognition import FacialRecognition
 from utility.TextManipulation import extract_driving_license_info
+from requests import post
+from utility.constants import UPDATE_USER_STATUS_URL
 import utility.OCR as OCR
 import io
 import time
 import re
+
+r_compiled = re.compile(r'^[A-Z9]{5}\d{6}[A-Z9]{2}\d$', re.X)
 
 
 def verify(passport_image_bytes, user_image_bytes,
@@ -28,6 +32,24 @@ def verify(passport_image_bytes, user_image_bytes,
         return check_face_result
 
 
+def update_user_status(verified, response_message):
+
+    data = {
+        verified: verified,
+        message: response_message
+    }
+
+    try:
+        response = post(UPDATE_USER_STATUS_URL, verify=False, data=data)
+        if(response.status_code == 200):
+            return
+        else:
+            print("status code returned {}. expected 200 OK".format(
+                repsonse.status_code))
+    except Exception as e:
+        print(str(e))
+
+
 def __check_face(passport_image, user_image):
     try:
         fr = FacialRecognition()
@@ -47,7 +69,7 @@ def __verify_age(passport_image_bytes, driving_license_image):
     '''
     passport_mrz_data = __get_passport_info(passport_image_bytes)
 
-    if(passport_mrz_data.valid_score < 50 or 
+    if(passport_mrz_data.valid_score < 50 or
        not passport_mrz_data.date_of_birth_valid):
         return False
 
@@ -94,6 +116,4 @@ def __get_license_info(driving_license_image):
 
 
 def __verify_driving_license_number(license_number):
-    license_regex = (r'^[A-Z9]{5}\d{6}[A-Z9]{2}\d$')
-    r_compiled = re.compile(license_regex, re.X)
     return re.match(r_compiled, license_number)

@@ -1,10 +1,34 @@
 from sys import argv
 from termcolor import colored
+import work.workfactory
 
-arg_vals = dict({
-    "-c, --connectionstring": "URL of mongo db work queue",    
-})
 connection_string = None
+connection_string_help = "Connection string for the mongo db work queue"
+display_help = False
+
+arg_vals = {
+    "--connectionstring": {
+        var: connection_string,
+        help_text: connection_string_help
+    },
+    "-c": {
+        var: connection_string,
+        help_text: connection_string_help
+    }"--help": {
+        var: display_help,
+        help_text: None
+    },
+    "-h": {
+        var: display_help,
+        help_text: None
+    }
+}
+
+
+class VerifyProcess():
+
+    __init__():
+        pass
 
 
 def main():
@@ -17,8 +41,9 @@ def main():
         print("Invalid arguments")
         return
 
-    work_queue = MongoWorkQueue()
-    
+    work_factory = work.workfactory.WorkFactory(5, 120)
+    work_factory.initialise()
+
 
 def arg_parser(args):
     if(str(args[0]).lower() == "-h" or str(args[0]).lower() == "-help"):
