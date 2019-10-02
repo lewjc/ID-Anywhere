@@ -1,5 +1,4 @@
 from pymongo import MongoClient
-from pprint import pprint
 import datetime
 
 
@@ -8,15 +7,23 @@ class MongoWorkQueue():
     __client = None
     __queue = None
 
-    def __init__(self, mongo_url):
-        client = MongoClient(mongo_url)
-        __queue = client.queue
+    def __init__(self, host, port):
+        try:
+            self.__client = MongoClient(
+                host=host, port=port, connect=True)
 
-    def get_next_job():
-        work = __queue.findAndModify(
-            query={},
-            sort={_id: 1},
-            update={"$set": {start_time: datetime.datetime.now()}})
+            db = self.__client["idanywhere"]
+            self.__queue = db["queue"]
+            print(
+                "[CONNECTED TO MONGODB INSTANCE ON {0}:{1}]".format(host, port))
+        except Exception as e:
+            print("Could not connect to local mongodb server.")
+
+    def get_next_job(self):
+        work = self.__queue.find_and_modify(
+            query={"start_time": None},
+            sort={"_id": 1},
+            update={"$set": {"start_time": datetime.datetime.now()}})
         return work
 
     def mark_done(work_job):
@@ -27,3 +34,14 @@ class MongoWorkQueue():
                 work_job.guid))
         except Exception as e:
             print('Error removing work job from the queue: {}'.format(str(e)))
+
+    def create_test_job(self):
+
+        testdoc = {
+            "passport_bytes":,
+            "user_image_bytes":,
+            "license_bytes":,
+            "guid":,
+            "passport_bytes": }
+
+        self.__queue.insert_one()
