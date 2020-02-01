@@ -6,36 +6,64 @@ class LandingPage extends StatelessWidget {
 
   final String title;
 
-  @override Widget build(BuildContext context) {
-    
-    return(
-      Scaffold(
+  @override
+  Widget build(BuildContext context) {
+    return (Scaffold(
+        backgroundColor: Colors.pink,
         body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'ID Anywhere',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontStyle: FontStyle.italic,
+                      fontFamily: 'Open Sans',
+                      fontSize: 70),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'A digital identification solution',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontStyle: FontStyle.italic,
+                      fontFamily: 'Open Sans',
+                      fontSize: 20),
+                ),
+              ],
+            ),
+            SizedBox(height: 200),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Column(
                   children: <Widget>[
                     IDAnywhereButton(
-                      text:"Login",
+                      text: "Login",
                       onPressed: () => Navigator.pushNamed(context, '/login'),
-                    )
+                    ),
                   ],
                 ),
                 Column(
                   children: <Widget>[
                     IDAnywhereButton(
-                      text: "Sign up",
-                      onPressed: () => Navigator.pushNamed(context, '/login')
-                    )
+                        text: "Sign up",
+                        onPressed: () => Navigator.pushNamed(context, '/login'))
                   ],
-                )
+                ),
+                SizedBox(height: 500),
               ],
             )
           ],
-        )
-      ,)
-    );
+        )));
   }
 }

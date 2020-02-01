@@ -12,7 +12,7 @@ class IDAnywhereButton extends StatelessWidget{
   Widget build(BuildContext context) {
 
     return Container(
-      width: 250,
+      width: 180,
       height: 50,      
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
