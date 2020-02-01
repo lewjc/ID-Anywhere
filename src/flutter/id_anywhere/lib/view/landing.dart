@@ -57,7 +57,7 @@ class LandingPage extends StatelessWidget {
                   children: <Widget>[
                     IDAnywhereButton(
                         text: "Sign up",
-                        onPressed: () => Navigator.pushNamed(context, '/login'))
+                        onPressed: () => Navigator.pushNamed(context, '/signup'))
                   ],
                 ),
                 SizedBox(height: 500),

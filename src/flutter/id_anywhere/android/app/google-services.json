@@ -1,0 +1,41 @@
+
+{
+  "project_info": {
+    "project_number": "769595029557",
+    "firebase_url": "https://dissertation-498be.firebaseio.com",
+    "project_id": "dissertation-498be",
+    "storage_bucket": "dissertation-498be.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:769595029557:android:22972c831941005c2fd97c",
+        "android_client_info": {
+          "package_name": "com.lewiscummins.id_anywhere"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "769595029557-tsspqrjajj535aafg8jd0idsnc4fqijs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7l6m7Sw_rNcFXHRB2tIAwbLrCk07gq38"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "769595029557-tsspqrjajj535aafg8jd0idsnc4fqijs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
