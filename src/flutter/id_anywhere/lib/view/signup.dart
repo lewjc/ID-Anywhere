@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:global_configuration/global_configuration.dart';
+import 'package:id_anywhere/service/signupService.dart';
 import 'package:id_anywhere/widgets/ida_button.dart';
+
 import 'package:id_anywhere/widgets/ida_textinput.dart';
 import 'package:id_anywhere/widgets/ida_title.dart';
 
@@ -15,12 +18,32 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
 
+  final firstNameController = TextEditingController();
+
+  final lastNameController = TextEditingController();
+
   final emailController = TextEditingController();
 
   final passwordController = TextEditingController();
 
+  final service = SignupService();
+
   void submit() {
-    _formKey.currentState.validate();
+    if(_formKey.currentState.validate()){
+      // Form is all okay, we can get our values and create the account.
+      String firstName = firstNameController.text;
+      String lastName = lastNameController.text;
+      String email = emailController.text;
+      String password = passwordController.text;
+      String url = GlobalConfiguration().getString("api_url");
+      bool successful = service.executeSignup(firstName, lastName, email, password);
+
+      if(successful){
+
+      } else {
+        
+      }  
+    }
   }
 
   @override
@@ -49,6 +72,7 @@ class _SignupPageState extends State<SignupPage> {
                     children: <Widget>[
                       IDAnywhereTextField(
                         hint: 'First Name',
+                        controller: firstNameController,
                         validator: (value) {
                           if (value.isEmpty) {
                             return 'Please enter first name';
@@ -60,6 +84,7 @@ class _SignupPageState extends State<SignupPage> {
                       SizedBox(height: 20),
                       IDAnywhereTextField(
                         hint: 'Last Name',
+                        controller: lastNameController,
                         validator: (value) {
                           if (value.isEmpty) {
                             return 'Please enter last name';
@@ -73,13 +98,28 @@ class _SignupPageState extends State<SignupPage> {
                   SizedBox(height: 20),
                   IDAnywhereTextField(
                       hint: 'Email',
-                      validator: (value) => 'true',
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please enter email';
+                        }
+
+                        return null;
+                      },
                       width: 300,
                       controller: emailController),
                   SizedBox(height: 20),
                   IDAnywhereTextField(
                     hint: 'Confirm email',
-                    validator: (value) => 'true',
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please confirm email';
+                      } else if (value.toLowerCase() !=
+                          this.emailController.text.toLowerCase()) {
+                        return 'Email does not match';
+                      } else {
+                        return null;
+                      }
+                    },
                     width: 300,
                   ),
                   SizedBox(height: 20),
