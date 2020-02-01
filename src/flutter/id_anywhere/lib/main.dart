@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:id_anywhere/view/login.dart';
 import 'package:id_anywhere/view/signup.dart';
+import 'package:global_configuration/global_configuration.dart';
 import 'view/landing.dart';
 
-void main() => runApp(MyApp());
+void main() async{
+  await GlobalConfiguration().loadFromAsset("app_settings");
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       title: 'ID Anywhere',
       theme: ThemeData(
