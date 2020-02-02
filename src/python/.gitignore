@@ -107,3 +107,4 @@ venv.bak/
 *.jpg
 
 .vscode/
+src/flutter/id_anywhere/assets/cfg/app_settings.json
