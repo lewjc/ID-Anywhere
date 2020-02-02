@@ -35,7 +35,7 @@ class IDAnywhereButton extends StatelessWidget{
               this.text,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 14,
+                fontSize: 17,
                 color: Colors.black
               ),
             ),
