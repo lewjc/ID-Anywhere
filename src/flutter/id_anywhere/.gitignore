@@ -28,6 +28,8 @@
 .pub-cache/
 .pub/
 /build/
+/assets/cfg/
+app_settings.json
 
 # Android related
 **/android/**/gradle-wrapper.jar
