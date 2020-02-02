@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:global_configuration/global_configuration.dart';
-import 'package:id_anywhere/service/signupService.dart';
+import 'package:id_anywhere/service/signup_service.dart';
 import 'package:id_anywhere/widgets/ida_button.dart';
-
 import 'package:id_anywhere/widgets/ida_textinput.dart';
 import 'package:id_anywhere/widgets/ida_title.dart';
 
@@ -28,21 +26,20 @@ class _SignupPageState extends State<SignupPage> {
 
   final service = SignupService();
 
-  void submit() {
-    if(_formKey.currentState.validate()){
+  void submit() async {
+    if (_formKey.currentState.validate()) {
       // Form is all okay, we can get our values and create the account.
       String firstName = firstNameController.text;
       String lastName = lastNameController.text;
       String email = emailController.text;
       String password = passwordController.text;
-      String url = GlobalConfiguration().getString("api_url");
-      bool successful = service.executeSignup(firstName, lastName, email, password);
+      bool successful =
+          await service.executeSignup(firstName, lastName, email, password);
 
-      if(successful){
-
-      } else {
+      if (successful) {
+        // If we are successful, ask if they would like to setup biometric identification for login.
         
-      }  
+      }
     }
   }
 
@@ -62,7 +59,7 @@ class _SignupPageState extends State<SignupPage> {
                   IDAnywhereTitle(text: 'Sign up'),
                 ],
               ),
-              Spacer(flex: 3),
+              SizedBox(height: 30),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -153,9 +150,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ],
               ),
-              Spacer(
-                flex: 15,
-              ),
+              SizedBox(height: 50),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,5 +162,14 @@ class _SignupPageState extends State<SignupPage> {
             ],
           ),
         ));
+  }
+
+  @override
+  void dispose() {
+    this.emailController.dispose();
+    this.firstNameController.dispose();
+    this.lastNameController.dispose();
+    this.passwordController.dispose();
+    super.dispose();
   }
 }

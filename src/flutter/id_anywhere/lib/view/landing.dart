@@ -7,55 +7,59 @@ class LandingPage extends StatelessWidget {
 
   final String title;
 
+  final AssetImage thumb = AssetImage('assets/images/fingerprint.png');
+
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
-        backgroundColor: Colors.pink,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                IDAnywhereTitle(text: 'ID Anywhere'),
-                SizedBox(height: 10),
-                Text(
-                  'A digital identification solution',
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                      fontStyle: FontStyle.italic,
-                      fontFamily: 'Open Sans',
-                      fontSize: 20),
-                ),
-              ],
+      backgroundColor: Colors.pink,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              IDAnywhereTitle(text: 'ID Anywhere'),
+              SizedBox(height: 20),
+              Text(
+                'A digital identification solution',
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontStyle: FontStyle.italic,
+                    fontFamily: 'Open Sans',
+                    fontSize: 20),
+              ),
+            ],
+          ),
+          SizedBox(height: 50),
+          Opacity(
+            opacity: 0.2,
+            child: Image(
+              height: 440,
+              width: 400,
+              image: thumb,
             ),
-            SizedBox(height: 200),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    IDAnywhereButton(
-                      text: "Login",
-                      onPressed: () => Navigator.pushNamed(context, '/login'),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    IDAnywhereButton(
-                        text: "Sign up",
-                        onPressed: () => Navigator.pushNamed(context, '/signup'))
-                  ],
-                ),
-                SizedBox(height: 500),
-              ],
-            )
-          ],
-        )));
+          ),
+          SizedBox(height: 80),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              IDAnywhereButton(
+                text: "Login",
+                onPressed: () => Navigator.pushNamed(context, '/login'),
+              ),
+              IDAnywhereButton(
+                  text: "Sign up",
+                  onPressed: () => Navigator.pushNamed(context, '/signup'))
+            ],
+          ),
+          SizedBox(height: 100),
+        ],
+      ),
+    ));
   }
 }
