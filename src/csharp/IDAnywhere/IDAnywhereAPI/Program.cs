@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Extensions.Logging;
 
 namespace IDAnywhereAPI
 {
@@ -16,11 +14,22 @@ namespace IDAnywhereAPI
       CreateHostBuilder(args).Build().Run();
     }
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-              webBuilder.UseStartup<Startup>();
-            });
+    public static IHostBuilder CreateHostBuilder(string[] args)
+    {
+      return Host.CreateDefaultBuilder(args)
+       .ConfigureWebHostDefaults(webBuilder =>
+       {
+         webBuilder.ConfigureKestrel(serverOptions =>
+         {
+           serverOptions.Listen(IPAddress.Any, 8000,
+             listenOptions =>
+             {
+               listenOptions.UseHttps(StoreName.My, "lewiscummins.dev",
+                 allowInvalid: false, StoreLocation.LocalMachine);
+             });
+         })
+         .UseStartup<Startup>();
+       });
+    }
   }
 }

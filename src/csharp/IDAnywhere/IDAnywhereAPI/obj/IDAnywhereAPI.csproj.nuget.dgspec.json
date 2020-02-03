@@ -4,6 +4,227 @@
     "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\IDAnywhereAPI\\IDAnywhereAPI.csproj": {}
   },
   "projects": {
+    "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\DataLayer\\DataLayer.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\DataLayer\\DataLayer.csproj",
+        "projectName": "DataLayer",
+        "projectPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\DataLayer\\DataLayer.csproj",
+        "packagesPath": "C:\\Users\\Lewis\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\DataLayer\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Lewis\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {
+              "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\DataModels\\DataModels.csproj": {
+                "projectPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\DataModels\\DataModels.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "dependencies": {
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[3.1.1, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[3.1.1, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[3.1.1, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[2.9.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[3.2.0, )"
+            },
+            "Serilog.Extensions.Logging": {
+              "target": "Package",
+              "version": "[3.0.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\DataModels\\DataModels.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\DataModels\\DataModels.csproj",
+        "projectName": "DataModels",
+        "projectPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\DataModels\\DataModels.csproj",
+        "packagesPath": "C:\\Users\\Lewis\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\DataModels\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Lewis\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {
+              "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\Dependancy\\Dependency.csproj": {
+                "projectPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\Dependancy\\Dependency.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\Dependancy\\Dependency.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\Dependancy\\Dependency.csproj",
+        "projectName": "Dependency",
+        "projectPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\Dependancy\\Dependency.csproj",
+        "packagesPath": "C:\\Users\\Lewis\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\Dependancy\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Lewis\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "dependencies": {
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[2.9.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[3.2.0, )"
+            },
+            "Serilog.Extensions.Logging": {
+              "target": "Package",
+              "version": "[3.0.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
     "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\IDAnywhereAPI\\IDAnywhereAPI.csproj": {
       "version": "1.0.0",
       "restore": {
@@ -12,6 +233,190 @@
         "projectPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\IDAnywhereAPI\\IDAnywhereAPI.csproj",
         "packagesPath": "C:\\Users\\Lewis\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\IDAnywhereAPI\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Lewis\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {
+              "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\DataLayer\\DataLayer.csproj": {
+                "projectPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\DataLayer\\DataLayer.csproj"
+              },
+              "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ServiceLayer\\ServiceLayer.csproj": {
+                "projectPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ServiceLayer\\ServiceLayer.csproj"
+              },
+              "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ViewModels\\ViewModels.csproj": {
+                "projectPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ViewModels\\ViewModels.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "dependencies": {
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[3.1.1, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Microsoft.Extensions.Logging.Debug": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[2.9.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[3.2.0, )"
+            },
+            "Serilog.Extensions.Logging": {
+              "target": "Package",
+              "version": "[3.0.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ServiceLayer\\ServiceLayer.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ServiceLayer\\ServiceLayer.csproj",
+        "projectName": "ServiceLayer",
+        "projectPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ServiceLayer\\ServiceLayer.csproj",
+        "packagesPath": "C:\\Users\\Lewis\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ServiceLayer\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Lewis\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {
+              "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\DataLayer\\DataLayer.csproj": {
+                "projectPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\DataLayer\\DataLayer.csproj"
+              },
+              "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ServiceModels\\ServiceModels.csproj": {
+                "projectPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ServiceModels\\ServiceModels.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "dependencies": {
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Serilog": {
+              "target": "Package",
+              "version": "[2.9.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[3.2.0, )"
+            },
+            "Serilog.Extensions.Logging": {
+              "target": "Package",
+              "version": "[3.0.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ServiceModels\\ServiceModels.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ServiceModels\\ServiceModels.csproj",
+        "projectName": "ServiceModels",
+        "projectPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ServiceModels\\ServiceModels.csproj",
+        "packagesPath": "C:\\Users\\Lewis\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ServiceModels\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -51,9 +456,61 @@
           "assetTargetFallback": true,
           "warn": true,
           "frameworkReferences": {
-            "Microsoft.AspNetCore.App": {
-              "privateAssets": "none"
-            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ViewModels\\ViewModels.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ViewModels\\ViewModels.csproj",
+        "projectName": "ViewModels",
+        "projectPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ViewModels\\ViewModels.csproj",
+        "packagesPath": "C:\\Users\\Lewis\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Lewis\\Documents\\Projects\\idanywhere\\src\\csharp\\IDAnywhere\\ViewModels\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Lewis\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
