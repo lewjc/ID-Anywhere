@@ -1,12 +1,10 @@
-﻿using DataLayer.SQL;
+﻿using AutoMapper;
+using DataLayer.SQL;
 using DataModels;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using ServiceLayer.Interfaces;
 using ServiceModels;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ServiceLayer.Implementations
@@ -14,21 +12,14 @@ namespace ServiceLayer.Implementations
   public class SignupService : BaseService<SignupService>, ISignupService
   {
 
-    public SignupService(ApiContext db, ILogger logger) : base(db, logger)
+    public SignupService(ApiContext db, ILogger logger, IMapper mapper) : base(db, logger, mapper)
     {
     }
 
     public async Task<ServiceResult> ExecuteSignup(SignUpSM sm)
     {
 
-      var userDataModel = new UserDM()
-      {
-        FirstName = sm.FirstName,
-        LastName = sm.LastName,
-        Email = sm.Email,
-        Password = sm.Password
-      };
-
+      var userDataModel = mapper.Map<UserDM>(sm);
       try
       {
         var t = await Db.Users.AddAsync(userDataModel);

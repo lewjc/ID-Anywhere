@@ -7,6 +7,7 @@ namespace Dependency.Enums
   public enum UserStatus
   {
     Unverified,
+    Pending,
     Verified
   }
 }

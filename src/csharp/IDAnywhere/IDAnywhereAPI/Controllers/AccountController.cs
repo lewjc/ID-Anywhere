@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer;
@@ -13,6 +14,7 @@ using ViewModels;
 namespace IDAnywhereAPI.Controllers
 {
   [Route("api/[controller]/[action]")]
+  [Authorize]
   [ApiController]
   public class AccountController : ControllerBase
   {
@@ -26,7 +28,8 @@ namespace IDAnywhereAPI.Controllers
     }
 
     [HttpPost]
-    public async Task<JsonResult> SignUp(SignUpVM vm)
+    [AllowAnonymous]
+    public async Task<ActionResult> SignUp(SignUpVM vm)
     {
       if (ModelState.IsValid)
       {
@@ -34,15 +37,32 @@ namespace IDAnywhereAPI.Controllers
 
         if (result.Valid)
         {
-          var json = new JsonResult("Success")
+          return new JsonResult("Success")
           {
             StatusCode = 200
           };
-          return json;
+
         }
+
+        return new JsonResult(result.Errors)
+        {
+          StatusCode = 400
+        };
       }
 
-      return null;
+      return new StatusCodeResult(500);
+    }
+
+
+    [HttpPost]
+    [AllowAnonymous]
+    public async Task<ActionResult> Login(LoginVM vm)
+    {
+      if (ModelState.IsValid)
+      {
+
+      }
+      return new StatusCodeResult(500);
     }
 
     // GET: api/Account/5
