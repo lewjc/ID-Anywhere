@@ -2,10 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:id_anywhere/view/login.dart';
 import 'package:id_anywhere/view/signup.dart';
 import 'package:global_configuration/global_configuration.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'view/landing.dart';
+import 'package:id_anywhere/service/local_authentication_service.dart';
+import 'package:get_it/get_it.dart';
+
+
+GetIt locator = GetIt();
 
 void main() async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool useLocalAuth = prefs.getBool("useLocalAuth") ?? false;
   await GlobalConfiguration().loadFromAsset("app_settings");
+  locator.registerLazySingleton(() => LocalAuthenticationService(isProtectionEnabled: useLocalAuth));
   runApp(MyApp());
 }
 
