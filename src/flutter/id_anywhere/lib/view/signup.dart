@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:id_anywhere/service/service_result.dart';
 import 'package:id_anywhere/service/signup_service.dart';
 import 'package:id_anywhere/widgets/ida_button.dart';
 import 'package:id_anywhere/widgets/ida_textinput.dart';
@@ -15,6 +16,8 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
 
   final firstNameController = TextEditingController();
 
@@ -33,12 +36,105 @@ class _SignupPageState extends State<SignupPage> {
       String lastName = lastNameController.text;
       String email = emailController.text;
       String password = passwordController.text;
-      bool successful =
+      FocusScope.of(context).unfocus();
+      ServiceResult result =
           await service.executeSignup(firstName, lastName, email, password);
 
-      if (successful) {
+      if (result.valid()) {
         // If we are successful, ask if they would like to setup biometric identification for login.
-        
+        scaffoldKey.currentState.showSnackBar(SnackBar(
+            content: Text(
+              "Sign up successful",
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 3)));
+
+        // Now, here we should ask the user to register biometric login.
+        // store the username and password in firebase, then when biometric success, grab those and post them.
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => SimpleDialog(
+                  backgroundColor: Colors.black,
+                
+                  shape: RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(10.0),
+                  ),
+                  title: Text(
+                    "Biometric Identification",
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                  children: <Widget>[
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                                padding: EdgeInsets.only(left: 5),
+                                width: MediaQuery.of(context).size.width*0.7,
+                                child: Text(                                  
+                                  "Would you like to setup fingerprint identification for this account?",                                  
+                                  style: TextStyle(color: Colors.white),
+                                ))
+                          ],
+                        ),
+                        SizedBox(height: 15),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Expanded(
+                              child: SimpleDialogOption(
+                                onPressed: () => {},
+                                  child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    "Yes",
+                                    style: TextStyle(
+                                        color: Colors.lightGreenAccent),
+                                  ),
+                                  Icon(Icons.check,
+                                      color: Colors.lightGreenAccent),
+                                ],
+                              )),
+                            ),
+                            Expanded(
+                              child: SimpleDialogOption(
+                                onPressed: () => { Navigator.popAndPushNamed(context, "/Login")},
+                                  child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,                                
+                                children: <Widget>[
+                                  Text("No",
+                                      style:
+                                          TextStyle(color: Colors.redAccent)),
+                                  Icon(Icons.block, color: Colors.redAccent)
+                                ],
+                              )),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ],
+                ));
+      } else {
+        for (final error in result.errors) {
+          scaffoldKey.currentState.showSnackBar(SnackBar(
+              content: Text(
+                error,
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+              ),
+              backgroundColor: Colors.yellow,
+              behavior: SnackBarBehavior.floating,
+              duration: Duration(seconds: 3)));
+        }
       }
     }
   }
@@ -48,6 +144,7 @@ class _SignupPageState extends State<SignupPage> {
     return Form(
         key: _formKey,
         child: Scaffold(
+          key: scaffoldKey,
           backgroundColor: Colors.pink,
           body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -148,17 +245,16 @@ class _SignupPageState extends State<SignupPage> {
                     width: 300,
                     passwordField: true,
                   ),
+                  SizedBox(height: 18),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      IDAnywhereButton(text: "Submit", onPressed: submit),
+                    ],
+                  ),
                 ],
               ),
-              SizedBox(height: 50),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  IDAnywhereButton(text: "Submit", onPressed: submit),
-                ],
-              ),
-              Spacer(),
             ],
           ),
         ));
