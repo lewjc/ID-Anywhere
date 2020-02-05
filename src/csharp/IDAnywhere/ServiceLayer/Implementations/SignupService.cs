@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using ServiceLayer.Interfaces;
 using ServiceModels;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ServiceLayer.Implementations
@@ -18,20 +19,16 @@ namespace ServiceLayer.Implementations
 
     public async Task<ServiceResult> ExecuteSignup(SignUpSM sm)
     {
-
-      var userDataModel = mapper.Map<UserDM>(sm);
-      try
+      var user = await Db.Users.FirstOrDefaultAsync(u => u.Email.ToLower().Equals(sm.Email.ToLower())); 
+      if(user == null)
       {
-        var t = await Db.Users.AddAsync(userDataModel);
+        var userDataModel = mapper.Map<UserDM>(sm);
+        await Db.Users.AddAsync(userDataModel);
         await Db.SaveChangesAsync();
-      }
-      catch (DbUpdateException e)
+      } else
       {
-        ServiceResult.Errors.Add("Error creating user, please try again later.");
-        Logger.Error(e, e.Message);
+        ServiceResult.Errors.Add("User already exists");
       }
-
-      // Here we need to create a user data model, and pass that into the database.
       return ServiceResult;
     }
   }

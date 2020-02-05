@@ -1,7 +1,10 @@
-﻿namespace ServiceLayer.Interfaces
+﻿using ServiceModels;
+using System.Threading.Tasks;
+
+namespace ServiceLayer.Interfaces
 {
   public interface ILoginService
   {
-    ServiceResult AttemptLogin(string email, string password); 
+    Task<ServiceResult> AttemptLogin(LoginSM sm); 
   }
 }

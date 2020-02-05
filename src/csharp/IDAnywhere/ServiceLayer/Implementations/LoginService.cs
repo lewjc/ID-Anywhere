@@ -1,32 +1,35 @@
 ﻿using AutoMapper;
 using DataLayer.SQL;
 using DataModels;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using ServiceLayer.Interfaces;
+using ServiceModels;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ServiceLayer.Implementations
 {
   public class LoginService : BaseService<LoginService>, ILoginService
   {
-    private readonly IConfiguration _configuration;
+    private IConfiguration configuration;
 
     public LoginService(ApiContext db, ILogger logger, IMapper mapper, IConfiguration configuration) : base(db, logger, mapper)
     {
-
+      this.configuration = configuration;
     }
 
-    public ServiceResult AttemptLogin(string email, string password)
+    public async Task<ServiceResult> AttemptLogin(LoginSM sm)
     {
-      var user = Db.Users.FirstOrDefault(x =>
-        x.Email.Equals(email, StringComparison.CurrentCultureIgnoreCase) &&
-        x.Password.Equals(password));
+      var user = await Db.Users.FirstOrDefaultAsync(x =>
+        x.Email.Equals(sm.Email, StringComparison.OrdinalIgnoreCase) &&
+        x.Password.Equals(sm.Password, StringComparison.OrdinalIgnoreCase));
 
       if (user == null)
       {
@@ -49,7 +52,7 @@ namespace ServiceLayer.Implementations
     {
       // User exists and is not locked; let us generate a token and login.
       var tokenHandler = new JwtSecurityTokenHandler();
-      var key = Encoding.ASCII.GetBytes(_configuration.GetValue<string>("AppSettings:Secret"));
+      var key = Encoding.ASCII.GetBytes(configuration.GetValue<string>("AppSettings:Secret"));
 
       var tokenDescriptor = new SecurityTokenDescriptor
       {

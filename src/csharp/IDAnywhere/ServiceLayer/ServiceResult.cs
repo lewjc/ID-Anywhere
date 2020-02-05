@@ -6,10 +6,9 @@ namespace ServiceLayer
 {
   public class ServiceResult
   {
+    public Dictionary<string, string> Values { get; set; } = new Dictionary<string, string>();
 
-    public Dictionary<string, object> Values { get; set; }
-
-    public List<string> Errors { get; set; }
+    public List<string> Errors { get; set; } = new List<string>();
 
     public bool Valid 
     {

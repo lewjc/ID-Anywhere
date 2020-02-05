@@ -22,6 +22,7 @@ namespace ServiceLayer
       Db = db;
       this.mapper = mapper;
       Logger = logger.ForContext<T>();
+      ServiceResult = new ServiceResult();
     }
   }
 }

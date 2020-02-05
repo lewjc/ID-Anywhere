@@ -11,11 +11,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using ServiceLayer.Implementations;
+using ServiceLayer.Interfaces;
 
 namespace IDAnywhereAPI
 {
@@ -72,15 +76,23 @@ namespace IDAnywhereAPI
       }, typeof(Startup));
 
       services.AddSerilogServices();
+      services.Configure<RouteOptions>(x =>
+      {
+        x.LowercaseUrls = true;
+      });
+      services.AddScoped<ISignupService, SignupService>();
+      services.AddScoped<ILoginService, LoginService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger logger)
     {
       if (env.IsDevelopment())
       {
         app.UseDeveloperExceptionPage();
       }
+
+      app.ConfigureExceptions(logger);
 
       app.UseCors(x =>
       {
