@@ -8,10 +8,6 @@ import os
 
 class MongoWorkQueue():
 
-    __client = None
-    __gridfs = None
-    __queue = None
-
     def __init__(self, host="127.0.0.1", port=27017, parent=""):
         try:
             self.__client = MongoClient(
@@ -52,7 +48,7 @@ class MongoWorkQueue():
     def mark_done(self, work_job):
         try:
             print('[{}] Complete'.format(work_job.guid))
-            __queue.delete_one(work_job)
+            self.__queue.delete_one(work_job)
             print('[{}] Successfully removed from work queue.'.format(
                 work_job.guid))
         except Exception as e:
