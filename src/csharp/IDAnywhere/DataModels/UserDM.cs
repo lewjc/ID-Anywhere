@@ -25,5 +25,7 @@ namespace DataModels
 
     public bool Locked { get; set; } = false;
 
+    public string AppID { get; set; }
+
   }
 }

@@ -15,10 +15,10 @@ namespace ViewModels
     [DataType(DataType.EmailAddress)]
     public string Email { get; set; }
 
-    /// <summary>
-    /// Should always be a string of a hash. NEVER PLAIN TEXT
-    /// </summary>
     [Required]
     public string Password { get; set; }
+
+    [Required]
+    public string AppID { get; set; }
   }
 }

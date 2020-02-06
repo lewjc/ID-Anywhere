@@ -11,6 +11,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,12 +29,16 @@ namespace ServiceLayer.Implementations
     public async Task<ServiceResult> AttemptLogin(LoginSM sm)
     {
       var user = await Db.Users.FirstOrDefaultAsync(x =>
-        x.Email.Equals(sm.Email, StringComparison.OrdinalIgnoreCase) &&
-        x.Password.Equals(sm.Password, StringComparison.OrdinalIgnoreCase));
+        x.Email.ToLower().Equals(sm.Email.ToLower()) &&
+        x.Password.Equals(sm.Password));
 
       if (user == null)
       {
-        ServiceResult.Errors.Add("User does not exist");
+        ServiceResult.Errors.Add("Email or password is incorrect.");
+      }
+      else if (user.AppID != sm.AppID)
+      {
+        ServiceResult.Errors.Add("The device you are logging in from is not the one bound to your account.");
       }
       else if (user.Locked)
       {
@@ -61,7 +66,7 @@ namespace ServiceLayer.Implementations
             new Claim(ClaimTypes.Name, user.ID.ToString())
         }),
         Expires = DateTime.UtcNow.AddHours(1),
-        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.RsaSha256Signature)
+        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
       };
       var token = tokenHandler.CreateToken(tokenDescriptor);
       return tokenHandler.WriteToken(token);

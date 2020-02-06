@@ -68,7 +68,7 @@ namespace IDAnywhereAPI.Controllers
           return new JsonResult(result.Values);
         }
 
-        return new JsonResult(result.Errors)
+        return new JsonResult(new { result.Errors })
         {
           StatusCode = 400
         };

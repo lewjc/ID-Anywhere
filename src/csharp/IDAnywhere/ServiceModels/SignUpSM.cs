@@ -14,5 +14,7 @@ namespace ServiceModels
     /// Should always be a string of a hash. NEVER PLAIN TEXT
     /// </summary>
     public string Password { get; set; }
+
+    public string AppID { get; set; }
   }
 }

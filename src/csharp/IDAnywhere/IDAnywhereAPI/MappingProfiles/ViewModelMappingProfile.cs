@@ -13,6 +13,7 @@ namespace IDAnywhereAPI.MappingProfiles
     public ViewModelMappingProfile()
     {
       CreateMap<SignUpVM, SignUpSM>();
+      CreateMap<LoginVM, LoginSM>();
     }
   }
 }

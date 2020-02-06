@@ -19,16 +19,21 @@ namespace ServiceLayer.Implementations
 
     public async Task<ServiceResult> ExecuteSignup(SignUpSM sm)
     {
-      var user = await Db.Users.FirstOrDefaultAsync(u => u.Email.ToLower().Equals(sm.Email.ToLower())); 
-      if(user == null)
+      bool emailExists = await Db.Users.AnyAsync(u => u.Email.ToLower().Equals(sm.Email.ToLower()));
+      bool appIdInUse = await Db.Users.AnyAsync(u => u.AppID.Equals(sm.AppID));
+      if (!emailExists && !appIdInUse)
       {
         var userDataModel = mapper.Map<UserDM>(sm);
         await Db.Users.AddAsync(userDataModel);
         await Db.SaveChangesAsync();
-      } else
+      } else if(emailExists)
       {
-        ServiceResult.Errors.Add("User already exists");
+        ServiceResult.Errors.Add("Email already in use.");
+      } else if (appIdInUse)
+      {
+        ServiceResult.Errors.Add("Application ID already registered.");
       }
+
       return ServiceResult;
     }
   }
