@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:id_anywhere/constants/flags.dart';
 import 'package:id_anywhere/service/service_result.dart';
 import 'package:id_anywhere/service/signup_service.dart';
 import 'package:id_anywhere/widgets/ida_button.dart';
 import 'package:id_anywhere/widgets/ida_textinput.dart';
 import 'package:id_anywhere/widgets/ida_title.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignupPage extends StatefulWidget {
   SignupPage({Key key, this.title}) : super(key: key);
@@ -50,79 +52,15 @@ class _SignupPageState extends State<SignupPage> {
             ),
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
-            duration: Duration(seconds: 3)));
+            duration: Duration(seconds: 2)));
 
         // Now, here we should ask the user to register biometric login.
         // store the username and password in firebase, then when biometric success, grab those and post them.
+        await service.storeDetailsInFirebase(email, password);
         showDialog(
             context: context,
             barrierDismissible: false,
-            builder: (_) => SimpleDialog(
-                  backgroundColor: Colors.black,
-                
-                  shape: RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(10.0),
-                  ),
-                  title: Text(
-                    "Biometric Identification",
-                    style: TextStyle(fontSize: 20, color: Colors.white),
-                  ),
-                  children: <Widget>[
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                                padding: EdgeInsets.only(left: 5),
-                                width: MediaQuery.of(context).size.width*0.7,
-                                child: Text(                                  
-                                  "Would you like to setup fingerprint identification for this account?",                                  
-                                  style: TextStyle(color: Colors.white),
-                                ))
-                          ],
-                        ),
-                        SizedBox(height: 15),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Expanded(
-                              child: SimpleDialogOption(
-                                onPressed: () => {},
-                                  child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    "Yes",
-                                    style: TextStyle(
-                                        color: Colors.lightGreenAccent),
-                                  ),
-                                  Icon(Icons.check,
-                                      color: Colors.lightGreenAccent),
-                                ],
-                              )),
-                            ),
-                            Expanded(
-                              child: SimpleDialogOption(
-                                onPressed: () => { Navigator.popAndPushNamed(context, "/Login")},
-                                  child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,                                
-                                children: <Widget>[
-                                  Text("No",
-                                      style:
-                                          TextStyle(color: Colors.redAccent)),
-                                  Icon(Icons.block, color: Colors.redAccent)
-                                ],
-                              )),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ],
-                ));
+            builder: (_) => dialog());
       } else {
         for (final error in result.errors) {
           scaffoldKey.currentState.showSnackBar(SnackBar(
@@ -130,10 +68,10 @@ class _SignupPageState extends State<SignupPage> {
                 error,
                 style:
                     TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
-              ),
+              ),  
               backgroundColor: Colors.yellow,
               behavior: SnackBarBehavior.floating,
-              duration: Duration(seconds: 3)));
+              duration: Duration(seconds: 2)));
         }
       }
     }
@@ -260,6 +198,12 @@ class _SignupPageState extends State<SignupPage> {
         ));
   }
 
+  void allowBiometricIdentification({bool allow = true}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(Flags.useLocalAuth, allow);
+    Navigator.popAndPushNamed(context, "/login");
+  }
+
   @override
   void dispose() {
     this.emailController.dispose();
@@ -268,4 +212,68 @@ class _SignupPageState extends State<SignupPage> {
     this.passwordController.dispose();
     super.dispose();
   }
+
+  SimpleDialog dialog() => SimpleDialog(
+        backgroundColor: Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: new BorderRadius.circular(10.0),
+        ),
+        title: Text(
+          "Biometric Identification",
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                      padding: EdgeInsets.only(left: 5),
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      child: Text(
+                        "Would you like to use local biometric identification for this account?",
+                        style: TextStyle(color: Colors.white),
+                      ))
+                ],
+              ),
+              SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Expanded(
+                    child: SimpleDialogOption(
+                        onPressed: () => allowBiometricIdentification(),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "Yes",
+                              style: TextStyle(color: Colors.lightGreenAccent),
+                            ),
+                            Icon(Icons.check, color: Colors.lightGreenAccent),
+                          ],
+                        )),
+                  ),
+                  Expanded(
+                    child: SimpleDialogOption(
+                        onPressed: () =>
+                            allowBiometricIdentification(allow: false),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Text("No",
+                                style: TextStyle(color: Colors.redAccent)),
+                            Icon(Icons.block, color: Colors.redAccent)
+                          ],
+                        )),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ],
+      );
 }
