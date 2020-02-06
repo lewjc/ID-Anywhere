@@ -1,4 +1,5 @@
 from PIL import Image
+
 from utility.ImageManipulation import ConvertImageToBW
 import utility.FacialRecognition as fr
 from utility.TextManipulation import extract_driving_license_info
@@ -12,13 +13,11 @@ import re
 r_compiled = re.compile(r'^[A-Z9]{5}\d{6}[A-Z9]{2}\d$', re.X)
 
 
-def verify(passport_image_bytes, user_image_bytes,
-           driving_license_image_bytes):
+def verify(passport_image_bytes: str, user_image_bytes: str,
+           driving_license_text: str, passport_image_text: str):
     # Convert the byte strings to images
     passport_image = Image.open(io.BytesIO(passport_image_bytes))
     user_image = Image.open(io.BytesIO(user_image_bytes))
-    driving_license_image = Image.open(
-        io.BytesIO(driving_license_image_bytes))
 
     check_face_result = __check_face(passport_image, user_image)
     print(check_face_result)
@@ -26,7 +25,7 @@ def verify(passport_image_bytes, user_image_bytes,
     if(check_face_result is bool):
         # Passed the first check, verify the user's face matches their
         # passport now to verify date of birth and driving license number.
-        __verify_age(passport_image_bytes, driving_license_image)
+        __verify_age(passport_image_text, driving_license_text)
 
     else:
         return check_face_result
