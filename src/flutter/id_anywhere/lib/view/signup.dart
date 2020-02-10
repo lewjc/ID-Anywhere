@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:id_anywhere/constants/flags.dart';
+import 'package:id_anywhere/enum/verification_status.dart';
+import 'package:id_anywhere/service/service_registration.dart';
 import 'package:id_anywhere/service/service_result.dart';
 import 'package:id_anywhere/service/signup_service.dart';
 import 'package:id_anywhere/widgets/ida_button.dart';
@@ -57,6 +60,8 @@ class _SignupPageState extends State<SignupPage> {
         // Now, here we should ask the user to register biometric login.
         // store the username and password in firebase, then when biometric success, grab those and post them.
         await service.storeDetailsInFirebase(email, password);
+        final secureStorage = resolver<FlutterSecureStorage>();
+        await secureStorage.write(key: Flags.verificationStatus, value: VerificationStatus.UNVERIFIED);
         showDialog(
             context: context,
             barrierDismissible: false,

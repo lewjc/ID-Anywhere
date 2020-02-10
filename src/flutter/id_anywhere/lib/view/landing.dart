@@ -11,6 +11,7 @@ class LandingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return (Scaffold(
       backgroundColor: Colors.pink,
       body: Column(
