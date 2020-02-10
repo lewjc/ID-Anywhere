@@ -35,6 +35,7 @@ class LoginService {
       // Login successful, store JWT and then login to home.
       var responseData = json.decode(response.body);
       String token = responseData["token"];
+      // Return a token, firstname and status. This can be stored in the current user's session.
       resolver<FlutterSecureStorage>().write(key: Flags.jwt, value: token);
       return result;
     } else{

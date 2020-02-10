@@ -169,7 +169,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     final secureStorage = resolver<FlutterSecureStorage>();
-    secureStorage.read(key: Flags.photoUploaded).then((flag) async {
+    secureStorage.read(key: Flags.photoUploaded).then((flag) async {      
       secureStorage.read(key: Flags.verificationStatus).then((status) {
         setState(() {
           this._verificationStatus = status ?? VerificationStatus.UNVERIFIED;
@@ -210,7 +210,7 @@ class _ProfilePageState extends State<ProfilePage> {
         uploadImageDetails(),
         Container(
             width: MediaQuery.of(context).size.width * 0.8,
-            height: MediaQuery.of(context).size.height * 0.2,
+            height: MediaQuery.of(context).size.height * 0.26,
             child: Column(
               children: <Widget>[
                 SizedBox(height: 59),
@@ -243,14 +243,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ],
                 ),
+                SizedBox(height: 50),
                 checkUpload(),
-                SizedBox(height: 20),
               ],
             )),
         Container(
           color: Colors.white,
           child: CustomPaint(
-            size: Size(MediaQuery.of(context).size.width, 328.5),
+            size: Size(MediaQuery.of(context).size.width, 273.5),
             painter: CurvePainter(),
           ),
         ),
@@ -259,28 +259,21 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget checkUpload() {
-    if (this._uploading) {
-      // Do progress bar
-      Container(
-        height: 50,
-        width: MediaQuery.of(context).size.width * 0.7,
-        child: LinearProgressIndicator(
-          value: this._progess,
-          backgroundColor: Colors.black,
-        ),
-      );
-    }
-
-    return Spacer();
+    // Do progress bar
+    return LinearProgressIndicator(
+      value: this._progess,
+      backgroundColor: Colors.pinkAccent[100],
+      semanticsLabel: "Uploading profile picture",
+    );
   }
 
   Material uploadImageDetails() => Material(
-      color: Colors.white,      
-      child: Ink(        
+      color: Colors.white,
+      child: Ink(
         decoration: BoxDecoration(
             border: Border.all(color: Colors.pinkAccent, width: 3.0),
             color: Colors.white,
-            shape: BoxShape.circle,            
+            shape: BoxShape.circle,
             image: this.imageSet
                 ? DecorationImage(
                     image: this._profilePicture.image, fit: BoxFit.cover)
@@ -292,20 +285,20 @@ class _ProfilePageState extends State<ProfilePage> {
           onTap: this.imageSet ? null : getImage,
           splashColor: Colors.pink[100],
           child: Padding(
-              padding: EdgeInsets.all(this.imageSet ? 100.0 : 75.0),
+              padding: EdgeInsets.all(this.imageSet ? 100 : 78),
               child: this.imageSet
                   ? null
-                  : this._downloading
-                      ? null
-                      : Column(children: [
-                          Icon(
-                            Icons.cloud_upload,
-                            size: 25.0,
-                            color: Colors.black,
-                          ),
-                          SizedBox(height: 10),
-                          Text("Upload Profile Picture")
-                        ])),
+                  : Column(children: [
+                      Icon(
+                        Icons.cloud_upload,
+                        size: 20.0,
+                        color: Colors.black,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Upload Profile Picture",
+                      )
+                    ])),
         ),
       ));
 
