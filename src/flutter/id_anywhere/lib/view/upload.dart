@@ -35,9 +35,9 @@ class _UploadPageState extends State<UploadPage> {
       storage.read(key: Flags.frontLicenseUploaded)
     ]).then((values) {
       this.setState(() {
-        this.passportUploaded = values[0].isNotEmpty && values[0] != null;
-        this.backOfLicenseUploaded = values[1].isNotEmpty && values[1] != null;
-        this.frontOfLicenseUploaded = values[2].isNotEmpty && values[2] != null;
+        this.passportUploaded =  values[0] != null && values[0].isNotEmpty;
+        this.backOfLicenseUploaded = values[1] != null && values[1].isNotEmpty;
+        this.frontOfLicenseUploaded =  values[2] != null && values[2].isNotEmpty;
       });
     });
     super.initState();
