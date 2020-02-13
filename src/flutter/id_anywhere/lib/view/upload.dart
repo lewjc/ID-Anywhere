@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:id_anywhere/constants/flags.dart';
 import 'package:id_anywhere/service/service_registration.dart';
+import 'package:id_anywhere/service/verify_license.dart';
 import 'package:id_anywhere/service/verify_passport.dart';
 import 'package:id_anywhere/widgets/ida_upload_card.dart';
 
@@ -13,46 +16,245 @@ class UploadPage extends StatefulWidget {
 }
 
 class _UploadPageState extends State<UploadPage> {
+  bool passportUploaded;
+  bool frontOfLicenseUploaded;
+  bool backOfLicenseUploaded;
+
+  @override
+  void initState() {
+    
+    final storage = resolver<FlutterSecureStorage>();
+    // Future.wait([
+    //   storage.write(key: Flags.passportUploaded, value: ""),
+    //   storage.write(key: Flags.backLicenseUploaded, value: ""),
+    //   storage.write(key: Flags.frontLicenseUploaded, value: "")
+    // ]);
+    Future.wait([
+      storage.read(key: Flags.passportUploaded),
+      storage.read(key: Flags.backLicenseUploaded),
+      storage.read(key: Flags.frontLicenseUploaded)
+    ]).then((values) {
+      this.setState(() {
+        this.passportUploaded = values[0].isNotEmpty && values[0] != null;
+        this.backOfLicenseUploaded = values[1].isNotEmpty && values[1] != null;
+        this.frontOfLicenseUploaded = values[2].isNotEmpty && values[2] != null;
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     // Here we need to do a lot of work.
-
-    /**
-   * 
-   * This will have the upload container for the license, the back of the license and the passport photo.
-   * 
-   *  For each upload, we need to:
-   *  Scan the picture, see if it fufills certain business requirements for the ID. Then
-   *  information is extracted from the image, turned into a model and sent to the upload portion of the API.
-   *  there the information is stored into mongo. If this all succeeds, 
-   *  then we will also upload the photo to cloud. From there, 
-   *  a flag can be set to say that the upload is verified
-   * 
-   * 
-   * 
-   */
-
-    final service = resolver<VerifyPassportService>();
+    final licenseService = resolver<VerifyLicenseService>();
+    final passportService = resolver<VerifyPassportService>();
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         SizedBox(height: 30),
-        IDAnywhereUploadCard(
-            title: 'Driving License Front',
-            validateImageCallback: service.verify),
-        IDAnywhereUploadCard(title: 'Driving License Back'),
-        IDAnywhereUploadCard(title: 'Passport'),
+        new IDAnywhereUploadCard(
+          title: 'Driving License Front',
+          validateImageCallback: licenseService.verifyFront,
+          informationDialog: license(true),
+          flag: Flags.frontLicenseUploaded,
+          complete: this.frontOfLicenseUploaded,
+        ),
+        new IDAnywhereUploadCard(
+          title: 'Driving License Back',
+          validateImageCallback: licenseService.verifyFront,
+          informationDialog: license(false),
+          flag: Flags.backLicenseUploaded,
+          complete: this.backOfLicenseUploaded,
+        ),
+        new IDAnywhereUploadCard(
+          title: 'Passport',
+          validateImageCallback: passportService.verify,
+          flag: Flags.passportUploaded,
+          complete: this.passportUploaded
+        ),
         Container(
           color: Colors.white,
           child: CustomPaint(
-            size: Size(MediaQuery.of(context).size.width, 248.16),
+            size: Size(MediaQuery.of(context).size.width, 296.2),
             painter: CurvePainter(),
           ),
         ),
       ],
     );
   }
+
+  SimpleDialog license(bool isFront) => SimpleDialog(
+        backgroundColor: Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: new BorderRadius.circular(10.0),
+        ),
+        title: Text(
+          "Back of license image requirements:",
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                      padding: EdgeInsets.only(left: 5),
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      child: Text(
+                        ("The picture you upload must adhere to these rules. " +
+                            "This picture will be checked and used when verifying you through your documents. "),
+                        style: TextStyle(color: Colors.white),
+                      ))
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              ListTile(
+                leading: Text(
+                  "-",
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+                title: Text(
+                  "The picture must be of the " +
+                      (isFront ? "front" : "back") +
+                      " of a provisional or full UK driving license.",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              ListTile(
+                leading: Text(
+                  "-",
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+                title: Text(
+                  "Ensure that there are no marks or blemishes on the iD.",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              ListTile(
+                leading: Text(
+                  "-",
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+                title: Text(
+                  "Ensure there is no glare and all information is clearly and perfectly visible.",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Expanded(
+                    child: SimpleDialogOption(
+                        onPressed: () => Navigator.pop(context),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "Okay",
+                              style: TextStyle(color: Colors.lightGreenAccent),
+                            ),
+                            Icon(Icons.check, color: Colors.lightGreenAccent),
+                          ],
+                        )),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ],
+      );
+
+  SimpleDialog passportDialog() => SimpleDialog(
+        backgroundColor: Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: new BorderRadius.circular(10.0),
+        ),
+        title: Text(
+          "Back of license image requirements:",
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                      padding: EdgeInsets.only(left: 5),
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      child: Text(
+                        ("The picture you upload must adhere to these rules. " +
+                            "This picture will be checked and used when verifying you through your documents. "),
+                        style: TextStyle(color: Colors.white),
+                      ))
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              ListTile(
+                leading: Text(
+                  "-",
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+                title: Text(
+                  "The picture must be of the FULL identification page on your passport. This page clearly shows your face as well as identity information",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              ListTile(
+                leading: Text(
+                  "-",
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+                title: Text(
+                  "Ensure that there are no marks or blemishes on the iD.",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              ListTile(
+                leading: Text(
+                  "-",
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+                title: Text(
+                  "Ensure there is no glare and all information is clearly and perfectly visible.",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Expanded(
+                    child: SimpleDialogOption(
+                        onPressed: () => Navigator.pop(context),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "Okay",
+                              style: TextStyle(color: Colors.lightGreenAccent),
+                            ),
+                            Icon(Icons.check, color: Colors.lightGreenAccent),
+                          ],
+                        )),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ],
+      );
 }
 
 class CurvePainter extends CustomPainter {
@@ -64,8 +266,8 @@ class CurvePainter extends CustomPainter {
 
     var path = Path();
 
-    path.moveTo(0, size.height * 0.89);
-    path.quadraticBezierTo(size.width * 0.25, size.height * 0.775,
+    path.moveTo(0, size.height * 0.9076);
+    path.quadraticBezierTo(size.width * 0.25, size.height * 0.825,
         size.width * 0.49, size.height * 0.9167);
     path.quadraticBezierTo(size.width * 0.7, size.height * 0.9584,
         size.width * 1.0, size.height * 0.9);

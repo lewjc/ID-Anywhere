@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -7,6 +8,7 @@ import 'package:id_anywhere/enum/verification_status.dart';
 import 'package:id_anywhere/helper/device_info.dart';
 import 'package:id_anywhere/helper/media_helper.dart';
 import 'package:id_anywhere/service/service_registration.dart';
+import 'package:id_anywhere/state/session.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -21,13 +23,14 @@ class ProfilePage extends StatefulWidget {
   }
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends State<ProfilePage>
+    with AutomaticKeepAliveClientMixin {
   bool imageSet = false;
-  String _verificationStatus;
-  bool _uploading = false;
   bool _downloading = false;
+  String _verificationStatus;
   double _progess = 0;
   Image _profilePicture;
+  String _name;
   // If the user does not have an image, then set up  load Icon
 
   void getImage() async {
@@ -142,13 +145,11 @@ class _ProfilePageState extends State<ProfilePage> {
           cloudStorage.child("profile_picture").putFile(image);
       uploadTask.events.listen((event) {
         setState(() {
-          this._uploading = true;
           this._progess = event.snapshot.bytesTransferred.toDouble() /
               event.snapshot.totalByteCount.toDouble();
         });
       }).onError((handleError) {
         setState(() {
-          this._uploading = false;
           this.imageSet = false;
           this._profilePicture = null;
         });
@@ -156,7 +157,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
       uploadTask.onComplete.then((complete) async {
         setState(() {
-          this._uploading = false;
           this.imageSet = true;
         });
         await resolver<FlutterSecureStorage>()
@@ -169,12 +169,14 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     final secureStorage = resolver<FlutterSecureStorage>();
-    secureStorage.read(key: Flags.photoUploaded).then((flag) async {      
-      secureStorage.read(key: Flags.verificationStatus).then((status) {
-        setState(() {
-          this._verificationStatus = status ?? VerificationStatus.UNVERIFIED;
-        });
+    final session = resolver<Session>();
+    secureStorage.read(key: Flags.photoUploaded).then((flag) {
+      setState(() {
+        this._verificationStatus =
+            session.user.status ?? VerificationStatus.UNVERIFIED;
+        this._name = session.user.firstname;
       });
+
       if ((flag ?? 'false').toLowerCase() == 'true' &&
           this._profilePicture == null) {
         setState(() {
@@ -198,7 +200,7 @@ class _ProfilePageState extends State<ProfilePage> {
         .child(DeviceInfoHelper.hashId(await DeviceInfoHelper.getDeviceId()))
         .child("profile_picture")
         .getDownloadURL();
-    return Image.network(downloadUrl);
+    return Image(image: CachedNetworkImageProvider(downloadUrl));
   }
 
   @override
@@ -215,7 +217,7 @@ class _ProfilePageState extends State<ProfilePage> {
               children: <Widget>[
                 SizedBox(height: 59),
                 Text(
-                  "Welcome back, Lewis.",
+                  "Welcome back, $_name",
                   style: TextStyle(
                       color: Colors.pink,
                       fontSize: 30,
@@ -263,7 +265,6 @@ class _ProfilePageState extends State<ProfilePage> {
     return LinearProgressIndicator(
       value: this._progess,
       backgroundColor: Colors.pinkAccent[100],
-      semanticsLabel: "Uploading profile picture",
     );
   }
 
@@ -288,17 +289,19 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: EdgeInsets.all(this.imageSet ? 100 : 78),
               child: this.imageSet
                   ? null
-                  : Column(children: [
-                      Icon(
-                        Icons.cloud_upload,
-                        size: 20.0,
-                        color: Colors.black,
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        "Upload Profile Picture",
-                      )
-                    ])),
+                  : this._downloading
+                      ? CircularProgressIndicator()
+                      : Column(children: [
+                          Icon(
+                            Icons.cloud_upload,
+                            size: 20.0,
+                            color: Colors.black,
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            "Upload Profile Picture",
+                          )
+                        ])),
         ),
       ));
 
@@ -309,6 +312,9 @@ class _ProfilePageState extends State<ProfilePage> {
             ? Colors.orange
             : Colors.red);
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class CurvePainter extends CustomPainter {
