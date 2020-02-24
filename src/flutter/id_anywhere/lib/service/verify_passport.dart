@@ -1,8 +1,13 @@
 import 'dart:io';
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:global_configuration/global_configuration.dart';
+import 'package:id_anywhere/constants/flags.dart';
+import 'package:id_anywhere/data/ida_firebase.dart';
 import 'package:id_anywhere/helper/date_helper.dart';
+import 'package:id_anywhere/helper/device_info.dart';
 import 'package:id_anywhere/helper/http.dart';
 import 'package:id_anywhere/models/passport_model.dart';
 import 'package:id_anywhere/service/service_registration.dart';
@@ -84,13 +89,14 @@ class VerifyPassportService {
       }
 
       // Run all of the validators.
-      return this.finaliseValidation(mrz);
+      return this.finaliseValidation(mrz, image);
     } catch (e) {
       print(e);
     } finally {
       textRecognizer.close();
     }
-    result.errors.add("Image was not clear enough, not all information could be analyzed.");
+    result.errors.add(
+        "Image was not clear enough, not all information could be analyzed.");
     return result;
   }
 
@@ -144,7 +150,7 @@ class VerifyPassportService {
     return mrz;
   }
 
-  Future<ServiceResult> finaliseValidation(String mrz) async {
+  Future<ServiceResult> finaliseValidation(String mrz, File image) async {
     // Go through each certainty result and create our model to upload.
     // IF any of these fail, we cannot create the model
     final number = this.validatePassportNumber(this.validators[0].resultText);
@@ -164,16 +170,16 @@ class VerifyPassportService {
 
     if (model.isValid()) {
       // Here we need to upload the photo file as well as post the data to the api.
-      final result = await this.postModel(model);
+      final result = await this.postModel(model, image);
       return result;
-    } 
+    }
 
     return new ServiceResult(errors: [
       "Some parts of the image were not valid. Please reupload a clearer picture"
     ]);
   }
 
-  Future<ServiceResult> postModel(PassportModel model) async {
+  Future<ServiceResult> postModel(PassportModel model, File image) async {
     ServiceResult result = new ServiceResult();
     String url = GlobalConfiguration().getString("api_url");
     url = "$url/api/upload/passport";
@@ -183,11 +189,24 @@ class VerifyPassportService {
 
     if (response.statusCode == 200) {
       // The upload for the passport worked.
+      StorageReference cloudStorage =
+          await FirebaseConnection().getUserStorageReference();
+      cloudStorage = cloudStorage
+          .child(DeviceInfoHelper.hashId(await DeviceInfoHelper.getDeviceId()));
+      final StorageUploadTask uploadTask =
+          cloudStorage.child("passport").putFile(image);
+
+      uploadTask.onComplete.then((complete) async {   
+        await resolver<FlutterSecureStorage>()
+            .write(key: Flags.passportUploaded, value: "true");
+      });
       return result;
     } else if (response.statusCode == 401) {
       // Unauthorised, token may have expired, get user to login and try again.
+      result.unauthorised = true;
     } else if (response.statusCode == 400) {
       // bad request, some parts of the model were not valid.
+      // Get errors from response and put in the service result
     } else {
       // Unknown internal server error occured.
     }
@@ -195,9 +214,7 @@ class VerifyPassportService {
     return result;
   }
 
-  void uploadImage(File image) {
-
-  }
+  void uploadImage(File image) {}
 
   String extractFirstName(String text) {
     return text?.split(" ")[0];

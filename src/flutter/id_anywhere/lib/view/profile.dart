@@ -286,7 +286,7 @@ class _ProfilePageState extends State<ProfilePage>
           onTap: this.imageSet ? null : getImage,
           splashColor: Colors.pink[100],
           child: Padding(
-              padding: EdgeInsets.all(this.imageSet ? 100 : 78),
+              padding: EdgeInsets.all(this.imageSet ? 100 : this._downloading ? 81 : 78),
               child: this.imageSet
                   ? null
                   : this._downloading

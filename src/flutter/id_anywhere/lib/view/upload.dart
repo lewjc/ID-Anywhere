@@ -22,13 +22,7 @@ class _UploadPageState extends State<UploadPage> {
 
   @override
   void initState() {
-    
-    final storage = resolver<FlutterSecureStorage>();
-    // Future.wait([
-    //   storage.write(key: Flags.passportUploaded, value: ""),
-    //   storage.write(key: Flags.backLicenseUploaded, value: ""),
-    //   storage.write(key: Flags.frontLicenseUploaded, value: "")
-    // ]);
+    final storage = resolver<FlutterSecureStorage>();    
     Future.wait([
       storage.read(key: Flags.passportUploaded),
       storage.read(key: Flags.backLicenseUploaded),
