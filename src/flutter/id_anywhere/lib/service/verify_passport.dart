@@ -261,7 +261,7 @@ class VerifyPassportService {
           yearPrefix = "19";
         }
         int year = int.tryParse("$yearPrefix$parseable");
-        return DateTime(year, month, day);
+        return DateTime(year, month, day).add(Duration(hours: 6));
       }
     }
 

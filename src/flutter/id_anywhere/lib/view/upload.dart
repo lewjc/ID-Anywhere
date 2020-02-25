@@ -56,7 +56,7 @@ class _UploadPageState extends State<UploadPage> {
         ),
         new IDAnywhereUploadCard(
           title: 'Driving License Back',
-          validateImageCallback: licenseService.verifyFront,
+          validateImageCallback: licenseService.verifyBack,
           informationDialog: license(false),
           flag: Flags.backLicenseUploaded,
           complete: this.backOfLicenseUploaded,

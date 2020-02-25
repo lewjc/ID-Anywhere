@@ -22,8 +22,8 @@ class VerifyLicenseService {
 
   final Map<String, Function(int, int, VisionText, LicenseModel model)>
       desiredLineIndicators = {
-    "1": extractFirstName,
-    "2": extractLastName,
+    "1": extractLastName,
+    "2": extractFirstName,
     "3": extractDateOfBirth,
     "4b": extractExpirationDate,
     "5": extractLicenseNumber,
@@ -63,19 +63,23 @@ class VerifyLicenseService {
     // This should scan the license image,
     // then extract appropriate information, to validate this is a license.
     ServiceResult result = new ServiceResult();
-    
-     StorageReference cloudStorage =
-          await FirebaseConnection().getUserStorageReference();
-      cloudStorage = cloudStorage
-          .child(DeviceInfoHelper.hashId(await DeviceInfoHelper.getDeviceId()));
-      final StorageUploadTask uploadTask =
-          cloudStorage.child("license_back").putFile(image);
+    String url = GlobalConfiguration().getString("api_url");
+    url = "$url/api/upload/licenseback";
+    Session session = resolver<Session>();
+    final response =
+        await HttpHelper.postJsonWithAuthorization({}, url, session.token);
+    StorageReference cloudStorage =
+        await FirebaseConnection().getUserStorageReference();
+    cloudStorage = cloudStorage
+        .child(DeviceInfoHelper.hashId(await DeviceInfoHelper.getDeviceId()));
+    final StorageUploadTask uploadTask =
+        cloudStorage.child("license_back").putFile(image);
 
-      uploadTask.onComplete.then((complete) async {
-        await resolver<FlutterSecureStorage>()
-            .write(key: Flags.backLicenseUploaded, value: "true");
-      });
-    // we just need to upload the back license image. then 
+    uploadTask.onComplete.then((complete) async {
+      await resolver<FlutterSecureStorage>()
+          .write(key: Flags.backLicenseUploaded, value: "true");
+    });
+    // we just need to upload the back license image. then
 
     return result;
   }
@@ -132,14 +136,14 @@ class VerifyLicenseService {
   static void extractFirstName(
       int currentBlock, int currentLine, VisionText text, LicenseModel model) {
     model.firstname =
-        text.blocks[currentBlock].lines[currentLine].text.split(" ")[1];
+        text.blocks[currentBlock].lines[currentLine].text.split(" ")[2];
   }
 
   static void extractLastName(
       int currentBlock, int currentLine, VisionText text, LicenseModel model) {
     try {
       model.lastname =
-          text.blocks[currentBlock].lines[currentLine].text.split(" ")[2];
+          text.blocks[currentBlock].lines[currentLine].text.split(" ")[1];
     } on IndexError catch (e) {
       print(e);
       return null;
@@ -176,6 +180,6 @@ class VerifyLicenseService {
   static void extractDateOfBirth(
       int currentBlock, int currentLine, VisionText text, LicenseModel model) {
     model.dateOfBirth = DateHelper.parseLicenseDate(
-        text.blocks[currentBlock].lines[currentLine].text.split(" ")[1]);
+        text.blocks[currentBlock].lines[currentLine].text.split(" ")[1]).add(Duration(hours: 6));
   }
 }
