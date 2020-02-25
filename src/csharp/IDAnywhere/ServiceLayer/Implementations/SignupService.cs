@@ -26,10 +26,12 @@ namespace ServiceLayer.Implementations
         var userDataModel = mapper.Map<UserDM>(sm);
         await Db.Users.AddAsync(userDataModel);
         await Db.SaveChangesAsync();
-      } else if(emailExists)
+      }
+      else if (emailExists)
       {
         ServiceResult.Errors.Add("Email already in use.");
-      } else if (appIdInUse)
+      }
+      else if (appIdInUse)
       {
         ServiceResult.Errors.Add("Application ID already registered.");
       }
