@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using DataLayer.Mongo;
 using DataLayer.SQL;
 using IDAnywhereAPI.MappingProfiles;
 using IDAnywhereAPI.ServiceExtensions;
@@ -18,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using ServiceLayer;
 using ServiceLayer.Implementations;
 using ServiceLayer.Interfaces;
 
@@ -43,14 +45,14 @@ namespace IDAnywhereAPI
       });
 
       string secret = Configuration.GetValue<string>("AppSettings:Secret");
-      byte[] secret_b =Encoding.ASCII.GetBytes(secret);
-        
+      byte[] secret_b = Encoding.ASCII.GetBytes(secret);
+
       services.AddDbContext<ApiContext>(options =>
       {
         options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
       });
 
-      services.AddAuthentication(x => 
+      services.AddAuthentication(x =>
       {
         x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -70,7 +72,7 @@ namespace IDAnywhereAPI
       });
 
       // Adding profile here may be redundant as automapper may auto search for profiles through reflection at startup? 
-      services.AddAutoMapper(options => 
+      services.AddAutoMapper(options =>
       {
         options.AddProfile<ViewModelMappingProfile>();
       }, typeof(Startup));
@@ -82,6 +84,8 @@ namespace IDAnywhereAPI
       });
       services.AddScoped<ISignupService, SignupService>();
       services.AddScoped<ILoginService, LoginService>();
+      services.AddScoped<IUploadService, UploadService>();
+      services.AddScoped<IMongoWorkQueue, MongoWorkQueue>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -96,13 +100,14 @@ namespace IDAnywhereAPI
 
       app.UseCors(x =>
       {
+
         x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
       });
 
       app.UseHttpsRedirection();
 
       app.UseRouting();
-
+      app.UseAuthentication();
       app.UseAuthorization();
 
       app.UseEndpoints(endpoints =>
