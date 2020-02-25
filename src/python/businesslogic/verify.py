@@ -1,7 +1,7 @@
 from PIL import Image
 
 from utility.ImageManipulation import ConvertImageToBW
-import utility.FacialRecognition as fr
+import utility.facialrecognition as fr
 from utility.TextManipulation import extract_driving_license_info
 from requests import post
 from utility.constants import UPDATE_USER_STATUS_URL
@@ -15,6 +15,13 @@ r_compiled = re.compile(r'^[A-Z9]{5}\d{6}[A-Z9]{2}\d$', re.X)
 
 def verify(passport_image_bytes: str, user_image_bytes: str,
            driving_license_text: str, passport_image_text: str):
+
+    '''
+    Get the job, from the app id, download the user image and passport
+    compare this information and make sure that they match for facial rec.
+    Then, we need to check mrz and get info off of it. date of birth, 
+    the expiry and stuff...............
+    '''
     # Convert the byte strings to images
     passport_image = Image.open(io.BytesIO(passport_image_bytes))
     user_image = Image.open(io.BytesIO(user_image_bytes))
@@ -27,7 +34,7 @@ def verify(passport_image_bytes: str, user_image_bytes: str,
         # passport now to verify date of birth and driving license number.
         __verify_age(passport_image_text, driving_license_text)
 
-    else:
+    else:   
         return check_face_result
 
 
