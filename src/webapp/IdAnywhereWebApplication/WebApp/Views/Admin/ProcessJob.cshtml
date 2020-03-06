@@ -1,0 +1,228 @@
+﻿@model JobViewModel
+@{
+  ViewData["Title"] = "ProcessJob";
+  Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+  <form asp-antiforgery="true" asp-action="ProcessJob" asp-controller="Admin" method="post" class="container">
+    <input hidden id="acceptPassport" name="acceptPassport" value="" />
+    <input hidden id="acceptLicenseFront" name="acceptLicenseFront" value="" />
+    <input hidden id="acceptLicenseBack" name="acceptLicenseBack" value="" />
+    <input hidden id="ID" name="ID" value="@Model.ID" />
+    <div class="row">
+      <div class="col-sm-12 text-center">
+        <h1>Process Job - @Model.ClaimedFirstName @Model.ClaimedLastName</h1>
+      </div>
+    </div>
+    <hr />
+    <div class="row" id="passport-validator-container">
+      <div class="col-sm-4">
+        <div class="row" id="passport-name-check">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="passport-first-name">First Name</label>
+              <input asp-for="FirstNamePassport" type="text" class="form-control" id="passport-first-name" />
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="passport-first-name">Last Name</label>
+              <input asp-for="LastNamePassport" type="text" class="form-control" id="passport-last-name" aria-describedby="emailHelp" />
+            </div>
+          </div>
+        </div>
+        <div id="passport-number-check" class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="passport-number">Number</label>
+              <input asp-for="PassportNumber" type="text" class="form-control" id="passport-number" />
+            </div>
+          </div>
+        </div>
+        <div id="passport-expiry-check" class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="passport-expiry">Expiry</label>
+              <div class="input-group date" data-provide="datepicker" data-date-format="dd-mm-yyyy">
+                <input asp-for="PassportExpiry" value="@Model.PassportExpiry.ToString("dd-MM-yyyy")" type="text" class="form-control" id="passport-expiry" />
+                <div class="input-group-addon">
+                  <span class="glyphicon glyphicon-th"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="passport-dob-check" class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="passport-dob">Date of Birth</label>
+              <div class="input-group date" data-provide="datepicker" data-date-format="dd-mm-yyyy">
+                <input asp-for="PassportDateOfBirth" value="@Model.PassportDateOfBirth.ToString("dd-MM-yyyy")" type="text" class="form-control" id="passport-dob" />
+                <div class="input-group-addon">
+                  <span class="glyphicon glyphicon-th"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="passport-mrz-check" class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="passport-mrz">MRZ</label>
+              <textarea asp-for="MRZ" rows="3" class="form-control" id="passport-mrz" maxlength="88"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="row">
+              <p>Are you happy that:</p>
+              <ul>
+                <li>
+                  The image is of a valid passport
+                </li>
+                <li>
+                  All information is correct as seen on the image.
+                </li>
+              </ul>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <button type="button" name="no" class="btn btn-block btn-danger" id="passport-deny" value="NO">NO</button>
+              </div>
+              <div class="col-sm-6">
+                <button type="button" name="yes" class="btn btn-block btn-success" id="passport-accept" value="YES">YES</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-8">
+        <img src="@Model.PassportUrl" alt="passport_image" class="job-image img-fluid img-thumbnail rounded mx-auto d-block">
+      </div>
+    </div>
+    <hr id="passport-break" />
+    <div class="row" id="front-license-validator-container">
+      <div class="col-sm-4">
+        <div class="row" id="license-name-check">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="license-first-name">First Name</label>
+              <input asp-for="FirstNameLicense" type="text" class="form-control" id="license-first-name" />
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="license-first-name">Last Name</label>
+              <input asp-for="LastNameLicense" type="text" class="form-control" id="license-last-name" aria-describedby="emailHelp" />
+            </div>
+          </div>
+        </div>
+        <div id="license-number-check" class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="license-number">Number</label>
+              <input asp-for="LicenseNumber" type="text" class="form-control" id="license-number" />
+            </div>
+          </div>
+        </div>
+        <div id="license-expiry-check" class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="license-expiry">Expiry</label>
+              <div class="input-group date" data-provide="datepicker" data-date-format="dd-mm-yyyy">
+                <input asp-for="LicenseExpiry" value="@Model.LicenseExpiry.ToString("dd-MM-yyyy")" type="text" class="form-control" id="license-expiry" />
+                <div class="input-group-addon">
+                  <span class="glyphicon glyphicon-th"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="license-dob-check" class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="license-dob">Date of Birth</label>
+              <div class="input-group date" data-provide="datepicker" data-date-format="dd-mm-yyyy">
+                <input asp-for="LicenseDateOfBirth" value="@Model.LicenseDateOfBirth.ToString("dd-MM-yyyy")" type="text" class="form-control" id="license-dob" />
+                <div class="input-group-addon">
+                  <span class="glyphicon glyphicon-th"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="row">
+              <p>Are you happy that:</p>
+              <ul>
+                <li>
+                  The image is of a valid license
+                </li>
+                <li>
+                  All information is correct as seen on the image.
+                </li>
+              </ul>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <button type="button" name="no" class="btn btn-block btn-danger" id="front-license-deny" value="NO">NO</button>
+              </div>
+              <div class="col-sm-6">
+                <button type="button" name="yes" class="btn btn-block btn-success" id="front-license-accept" value="YES">YES</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-8">
+        <img src="@Model.LicenseFrontUrl" alt="passport_image" class="job-image img-fluid img-thumbnail rounded  mx-auto d-block">
+      </div>
+    </div>
+    <hr id="license-break" />
+    <div class="row" id="back-license-validator-container">
+      <div class="col-sm-4">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="row">
+              <p>Are you happy that:</p>
+              <ul>
+                <li>
+                  The image is of the back of the drivers license provided.
+                </li>
+                <li>
+                  It is not fradulant
+                </li>
+                <li>
+                  It has features a normal driving license would have?
+                </li>
+              </ul>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <button type="button" name="no" class="btn btn-block btn-danger" id="back-license-deny" value="NO">NO</button>
+              </div>
+              <div class="col-sm-6">
+                <button type="button" name="yes" class="btn btn-block btn-success" id="back-license-accept" value="YES">YES</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-8">
+        <img src="@Model.LicenseBackUrl" alt="passport_image" class="job-image img-fluid img-thumbnail rounded  mx-auto d-block">
+      </div>
+    </div>
+    <hr id="back-license-break" />
+    <div class="row">
+      <div class="col-sm-6 offset-3">
+        <p>
+          Once all data has been checked against all the corresponding information, submit and the information will be passed back to the user.
+          They will be verified or asked to provide more information.
+        </p>
+        <button type="submit" class="btn btn-block btn-dark">Submit</button>
+      </div>
+    </div>
+  </form>
+<script src="~/js/ProcessJob.js"></script>
