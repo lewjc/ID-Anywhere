@@ -21,4 +21,12 @@ class HttpHelper {
         },
         encoding: Encoding.getByName("utf-8"));
   }
+
+  static Future<Response> getWithAuthorization(String url, String token) async {
+    return await http.get(url,
+        headers: {
+          "Accept": "application/json",
+          "Authorization": "Bearer $token"
+        });
+  }
 }

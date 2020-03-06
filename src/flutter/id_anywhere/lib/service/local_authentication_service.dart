@@ -9,7 +9,7 @@ class LocalAuthenticationService {
 
   final _auth = LocalAuthentication();
   Future<bool> isProtectionEnabled () async =>  
-    (await SharedPreferences.getInstance()).getBool(Flags.useLocalAuth);
+    (await SharedPreferences.getInstance()).getBool(Flags.useLocalAuth) ?? true;
 
   bool isAuthenticated = false;
 

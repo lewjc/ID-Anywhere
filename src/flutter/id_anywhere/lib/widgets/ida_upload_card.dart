@@ -33,7 +33,7 @@ class IDAnywhereUploadCard extends StatefulWidget {
         title: this.title,
         imageSelectedCallback: this.validateImageCallback,
         informationDialog: this.informationDialog,
-        complete: this.complete,
+        complete: this.complete ?? false,
         flag: this.flag);
   }
 }
@@ -133,7 +133,7 @@ class _IDAnywhereUploadCardState extends State<IDAnywhereUploadCard>
                       fontSize: 22),
                 ),
                 subtitle: Text(
-                    uploaded || widget.complete
+                    this.uploaded || widget.complete
                         ? 'Uploaded'
                         : 'Please select and upload',
                     style: TextStyle(color: Colors.white)),
@@ -141,11 +141,11 @@ class _IDAnywhereUploadCardState extends State<IDAnywhereUploadCard>
               ButtonBar(
                 children: <Widget>[
                   FlatButton(
-                    child: uploaded || widget.complete
+                    child: this.uploaded || widget.complete
                         ? null
                         : const Text('Upload',
                             style: TextStyle(color: Colors.white)),
-                    onPressed: uploaded || widget.complete ? null : upload,
+                    onPressed: this.uploaded || widget.complete ? null : upload,
                   ),
                 ],
               ),

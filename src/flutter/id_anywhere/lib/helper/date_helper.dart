@@ -37,7 +37,7 @@ class DateHelper {
         .toList();
     // Format the date of birth
     if (dateInfo.length == 3) {
-      return DateTime(dateInfo[2], dateInfo[1], dateInfo[0]);
+      return DateTime(dateInfo[2], dateInfo[1], dateInfo[0]).add(Duration(hours: 6));
     } else {
       return null;
     }

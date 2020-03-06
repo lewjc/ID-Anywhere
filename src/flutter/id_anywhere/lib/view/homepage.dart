@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:id_anywhere/constants/flags.dart';
+import 'package:id_anywhere/service/service_registration.dart';
 import 'package:id_anywhere/view/code.dart';
 import 'package:id_anywhere/view/profile.dart';
 import 'package:id_anywhere/view/upload.dart';
@@ -13,12 +16,34 @@ class HomePage extends StatefulWidget {
   State createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<bool> onBackPress() async {
     await SystemNavigator.pop();
     return false;
+  }
+
+  bool passportUploaded = false;
+  bool backOfLicenseUploaded = false;
+  bool frontOfLicenseUploaded = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    final storage = resolver<FlutterSecureStorage>();    
+    Future.wait([
+      storage.read(key: Flags.passportUploaded),
+      storage.read(key: Flags.backLicenseUploaded),
+      storage.read(key: Flags.frontLicenseUploaded)
+    ]).then((values) {
+      this.setState(() {
+        this.passportUploaded =  values[0] != null && values[0].isNotEmpty;
+        this.backOfLicenseUploaded = values[1] != null && values[1].isNotEmpty;
+        this.frontOfLicenseUploaded =  values[2] != null && values[2].isNotEmpty;
+      });
+    });
+    super.initState();
   }
 
   @override
@@ -65,7 +90,7 @@ class _HomePageState extends State<HomePage> {
               body: TabBarView(
                 children: [
                   ProfilePage(),
-                  UploadPage(),
+                  UploadPage(this.passportUploaded, this.backOfLicenseUploaded, this.frontOfLicenseUploaded),
                   CodePage()
                   // these are your pages
                 ],
@@ -75,6 +100,9 @@ class _HomePageState extends State<HomePage> {
               backgroundColor: Colors.white,
             )));
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 

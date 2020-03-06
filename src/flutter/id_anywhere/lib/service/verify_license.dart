@@ -63,23 +63,24 @@ class VerifyLicenseService {
     // This should scan the license image,
     // then extract appropriate information, to validate this is a license.
     ServiceResult result = new ServiceResult();
+    
+     StorageReference cloudStorage =
+          await FirebaseConnection().getUserStorageReference();
+      cloudStorage = cloudStorage
+          .child(DeviceInfoHelper.hashId(await DeviceInfoHelper.getDeviceId()));
+      final StorageUploadTask uploadTask =
+          cloudStorage.child("license_back").putFile(image);
+
+      uploadTask.onComplete.then((complete) async {
+        await resolver<FlutterSecureStorage>()
+            .write(key: Flags.backLicenseUploaded, value: "true");
+      });
+
     String url = GlobalConfiguration().getString("api_url");
     url = "$url/api/upload/licenseback";
     Session session = resolver<Session>();
-    final response =
-        await HttpHelper.postJsonWithAuthorization({}, url, session.token);
-    StorageReference cloudStorage =
-        await FirebaseConnection().getUserStorageReference();
-    cloudStorage = cloudStorage
-        .child(DeviceInfoHelper.hashId(await DeviceInfoHelper.getDeviceId()));
-    final StorageUploadTask uploadTask =
-        cloudStorage.child("license_back").putFile(image);
-
-    uploadTask.onComplete.then((complete) async {
-      await resolver<FlutterSecureStorage>()
-          .write(key: Flags.backLicenseUploaded, value: "true");
-    });
-    // we just need to upload the back license image. then
+    final response = await HttpHelper.postJsonWithAuthorization(
+       null, url, session.token);
 
     return result;
   }
@@ -113,7 +114,7 @@ class VerifyLicenseService {
       cloudStorage = cloudStorage
           .child(DeviceInfoHelper.hashId(await DeviceInfoHelper.getDeviceId()));
       final StorageUploadTask uploadTask =
-          cloudStorage.child("passport").putFile(image);
+          cloudStorage.child(pictureName).putFile(image);
 
       uploadTask.onComplete.then((complete) async {
         await resolver<FlutterSecureStorage>()
