@@ -27,5 +27,7 @@ namespace DataModels
 
     public string AppID { get; set; }
 
+    public DateTime? DateOfBirth { get; set; }
+
   }
 }

@@ -17,12 +17,12 @@ Compares the face found in image_one_name and image_two_name to
     """
     image_one_encoding = __get_image_encoding(image_one)
     image_two_encoding = __get_image_encoding(image_two)
-    print("{} is image one".format(image_one_encoding))
-    return face_recognition.compare_faces([image_one_encoding],
-                                          image_two_encoding)
+    matches = face_recognition.compare_faces(image_one_encoding,
+                                            image_two_encoding[0])
+    return any(matches)
 
 
-def __get_image_encoding(image, allowMultiple=False):
+def __get_image_encoding(image, allowMultiple=True):
 
     if(image is None):
         raise Exception("Image provided is None.")
@@ -36,7 +36,7 @@ def __get_image_encoding(image, allowMultiple=False):
         raise Exception(
             "Multiple faces detected in {0}".format(image_path))
 
-    if(allowMultiple):
+    if(allowMultiple and len(image_encodings) > 1):
         return image_encodings
 
-    return image_encodings[0]
+    return [image_encodings[0]]
