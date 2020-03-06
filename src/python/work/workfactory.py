@@ -13,7 +13,7 @@ class WorkFactory():
     __finalise_work = False
     __workers = 0
 
-    def __init__(self, workers=3, worker_sleep=60):
+    def __init__(self, workers=1, worker_sleep=15):
         self.__workers = workers
         self.__worker_sleep = worker_sleep
         print("[INITIALISED WORK FACTORY]")

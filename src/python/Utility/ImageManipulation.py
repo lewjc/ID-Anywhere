@@ -1,6 +1,3 @@
-from PIL import Image
-
-
 def ConvertImageToBW(image_location, threshold=128):
     col = Image.open(image_location)
     gray = col.convert('L')

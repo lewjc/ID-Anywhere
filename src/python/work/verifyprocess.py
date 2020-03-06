@@ -10,7 +10,7 @@ class VerifyProcessWorker():
     __job_refresh = 0
     __id = None
 
-    def __init__(self, _id, job_refresh=60):
+    def __init__(self, _id, job_refresh=15):
         self.__id = _id
         self.__job_refresh = job_refresh
 
@@ -26,13 +26,11 @@ class VerifyProcessWorker():
                     time.sleep(self.__job_refresh)
                     continue
 
-                print("[SELECTED JOB {}]".format(job["guid"]))
+                print("[SELECTED JOB {}]".format(str(job["_id"])))
                 self.__process_job(job)
 
         except Exception as e:
-            print(str(e))
+            print(e)
 
-    def __process_job(self, job):
-
-        verified, message = verify(job)
-        update_user_status(verified, message, job['guid'])
+    def __process_job(self, job):        
+        update_user_status(*verify(job), id=job["UserId"])
