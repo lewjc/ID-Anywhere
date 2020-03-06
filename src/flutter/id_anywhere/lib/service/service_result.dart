@@ -4,4 +4,6 @@ class ServiceResult{
   List<dynamic> errors = [];
 
   bool valid () => this.errors.isEmpty;
+
+  bool unauthorised = false;
 }

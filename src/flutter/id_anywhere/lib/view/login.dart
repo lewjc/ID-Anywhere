@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<bool> attemptLocalAuth() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();    
     if (prefs.getBool(Flags.useLocalAuth) ?? false) {
       final LocalAuthenticationService _localAuth =
           resolver<LocalAuthenticationService>();

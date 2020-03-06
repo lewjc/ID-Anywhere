@@ -7,6 +7,7 @@ import 'package:global_configuration/global_configuration.dart';
 import 'view/landing.dart';
 
 void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
   setupDependencies();
   await GlobalConfiguration().loadFromAsset("app_settings");
   runApp(MyApp());

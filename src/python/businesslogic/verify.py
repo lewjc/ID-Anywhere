@@ -1,46 +1,76 @@
-from PIL import Image
-
-from utility.ImageManipulation import ConvertImageToBW
-import utility.FacialRecognition as fr
-from utility.TextManipulation import extract_driving_license_info
+from utility.imagemanipulation import ConvertImageToBW
+import utility.facialrecognition as fr
+from utility.textmanipulation import extract_driving_license_info
 from requests import post
 from utility.constants import UPDATE_USER_STATUS_URL
-import utility.OCR as OCR
+from PIL import Image
 import io
+import json
 import time
 import re
+import os
+import pathlib
+import datetime
+from passporteye import read_mrz
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import storage
 
-r_compiled = re.compile(r'^[A-Z9]{5}\d{6}[A-Z9]{2}\d$', re.X)
+r_compiled = re.compile(r'^[A-Z9]{5}\d{6}[A-Z9]{2}\d[A-Z]{2}$', re.I)
+
+path = os.path.join(os.getcwd(), "dissertation-498be-firebase-adminsdk-od080-e7eb596b9e.json")
+cred = credentials.Certificate(path)
+
+app = firebase_admin.initialize_app(cred, {
+    'storageBucket': 'dissertation-498be.appspot.com'
+}, name='storage')
 
 
-def verify(passport_image_bytes: str, user_image_bytes: str,
-           driving_license_text: str, passport_image_text: str):
+def verify(job: dict):
+
+    '''
+    Get the job, from the app id, download the user image and passport
+    compare this information and make sure that they match for facial rec.
+    Then, we need to check mrz and get info off of it. date of birth, 
+    the expiry and stuff...............
+    '''
     # Convert the byte strings to images
-    passport_image = Image.open(io.BytesIO(passport_image_bytes))
-    user_image = Image.open(io.BytesIO(user_image_bytes))
+
+
+    bucket = storage.bucket(app=app)
+
+    default_bucket = "userinf/{}/".format(job['AppID'])
+    passport_image_blob = default_bucket + "passport"
+    user_image_blob = default_bucket + "profile_picture"
+    passport_image_blob = bucket.blob(passport_image_blob)
+    user_image_blob = bucket.blob(user_image_blob)
+
+    bytesss = passport_image_blob.download_as_string()
+    bytesss2 = user_image_blob.download_as_string()
+
+    passport_image = Image.open(io.BytesIO(bytesss))
+    user_image = Image.open(io.BytesIO(bytesss2))
 
     check_face_result = __check_face(passport_image, user_image)
-    print(check_face_result)
 
-    if(check_face_result is bool):
+    if(check_face_result[0]):
         # Passed the first check, verify the user's face matches their
-        # passport now to verify date of birth and driving license number.
-        __verify_age(passport_image_text, driving_license_text)
-
+        # passport now to verify date of biheaders = {'content-type': 'application/json'}rth and driving license number.
+        return __verify_age(io.BytesIO(bytesss), job)            
     else:
         return check_face_result
 
 
-def update_user_status(verified, response_message, guid):
+def update_user_status(verified, response_message, id):
 
     data = {
-        "verified": verified,
-        "message": response_message,
-        "GUID": guid
+        "Verified": verified,
+        "Message": str(response_message),
+        "UserId": str(id)
     }
 
     try:
-        response = post(UPDATE_USER_STATUS_URL, verify=False, data=data)
+        response = post(UPDATE_USER_STATUS_URL, verify=True, data=json.dumps(data), headers={'content-type': 'application/json'})
         if(response is None):
             print("API Call error")
 
@@ -55,7 +85,7 @@ def update_user_status(verified, response_message, guid):
 
 def __check_face(passport_image, user_image):
     try:
-        result = fr.compare_faces(passport_image, user_image),
+        result = fr.compare_faces(passport_image, user_image)
         if(result):
             return (result, "Passport + Image identified")
 
@@ -69,59 +99,85 @@ def __check_face(passport_image, user_image):
         return (False, "Error")
 
 
-def __verify_age(passport_image_bytes, driving_license_image):
+def __verify_age(passport_bytes, job):
     '''
     Verifies the user's age and cross references information between the
     driving license and the passport.
 
+    if failed, just check the information provided.
+    get mrz date of birth, get date of birth from the data provided. compare, then compare with the driving license.
+    Finally, check the driving license number, make sure that the ifnroamtion in that matches the date of birth in teh license.
+
+    make sure the documents are not expired. then post and we can now look to display the info/.    
+    TOMORROW> Get this finished, then commit and fix up the api and app.
+
+    From there, we need to verify the images. Once those are done then we need to develop the admin lgoin, to then verify new users.
+    Once verified, tehe user can request a code. Once a code is made in the API then we can hold that in the database.
+
+    When scanned by the POS, we know that we can verify through the api.  
+
     '''
-    passport_mrz_data = __get_passport_info(passport_image_bytes)
+    passport_mrz_data = read_mrz(passport_bytes)
 
     if(passport_mrz_data.valid_score < 50 or
-       not passport_mrz_data.date_of_birth_valid):
-        return False
+       not passport_mrz_data.valid_date_of_birth):
+        print("Failed MRZ checker.")
 
-    user_license_dob, user_license_number = __get_license_info(
-        driving_license_image)
-
-    # TODO: get the information out of the MRZ and compare the two dates.
-    # possibly try and give this a trial run.
-
+    license_data = job["LicenseData"]
+    passport_data = job["PassportData"]
     passport_dob = passport_mrz_data.date_of_birth
     # Add spaces after each 2 characters in the string
     passport_dob = " ".join(passport_dob[i:i+2]
                             for i in range(0, len(passport_dob), 2))
 
     passport_dob = time.strptime(passport_dob, "%y %m %d")
-    license_dob = time.strptime(user_license_dob, "%d-%m-%y")
+    errors_in_data = compare_mobile_data(license_data, passport_data)
 
-    # TODO: Potentailly extract the first 5 letters of the last name from the
-    # license number and then compare that to the last name extracted from the
-    # passport mrz.
-
-    if(passport_dob != license_dob):
-        return False
-
-    license_verified = __verify_driving_license_number(user_license_number)
-
-    if(not license_verified):
-        return False
-
-    # Verified the dates of birth from the two identify documents
+    if(errors_in_data > 3 or errors_in_data < 0):
+        return (False, "Quality of information provided not good enough.")
+    
+    return (True, "Information provided is sutiable")
 
 
-def __get_passport_info(passport_image):
-    bw_passport_photo = ConvertImageToBW(passport_image)
-    return OCR.read_mrz(bw_passport_photo)
+def compare_mobile_data(license_data: dict, passport_data: dict):
 
+    today = datetime.datetime.now().date()
+    error_count = 0
 
-def __get_license_info(driving_license_image):
-    bw_driving_image = ConvertImageToBW(
-        driving_license_image, threshold=65)
-    driving_license_string = OCR.read_characters(bw_driving_image)
-    return extract_driving_license_info(
-        driving_license_string)
+    if (not (license_data["FirstName"].lower() ==
+        passport_data["FirstName"].lower())):
+        error_count +=1
+    if (not (license_data["LastName"].lower() ==
+        passport_data["LastName"].lower())):
+       error_count +=1
+    if (not (license_data["DateOfBirth"].date() ==
+        passport_data["DateOfBirth"].date())):
+       error_count +=1
+    else:
+        if(not __verify_driving_license_number(license_data["Number"])):
+            error_count +=1 
+        else:
+            dob_from_number = license_data["Number"][5:11]
+            year = dob_from_number[0]+dob_from_number[-1]
+            month = int(dob_from_number[1] + dob_from_number[2])
+            day = int(dob_from_number[3] + dob_from_number[4])
 
+            current_year = datetime.datetime.now().year
+            prefix = 20
+            if(current_year - 2000 < int(year)):
+                prefix = 19
+            year = int("{}{}".format(prefix, year))
+            dob_from_number = datetime.datetime(year, month, day).date()
+
+            if(not dob_from_number == license_data["DateOfBirth"].date()):
+                error_count +=1
+    
+    if(not license_data["Expiry"].date() > today and passport_data["Expiry"].date() > today):
+        return -1
+    
+    
+    return error_count
+        
 
 def __verify_driving_license_number(license_number):
     return re.match(r_compiled, license_number)

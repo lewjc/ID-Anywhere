@@ -54,7 +54,7 @@ def main():
         print("Invalid arguments")
         return
 
-    work_factory = work.workfactory.WorkFactory(3, 60)
+    work_factory = work.workfactory.WorkFactory(1, 15)
     p = Process(target=work_factory.initialise)
     p.start()
 
