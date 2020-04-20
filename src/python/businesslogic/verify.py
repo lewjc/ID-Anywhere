@@ -45,18 +45,18 @@ def verify(job: dict):
     passport_image_blob = bucket.blob(passport_image_blob)
     user_image_blob = bucket.blob(user_image_blob)
 
-    bytesss = passport_image_blob.download_as_string()
-    bytesss2 = user_image_blob.download_as_string()
+    passport_bytes = passport_image_blob.download_as_string()
+    profile_picture_bytes = user_image_blob.download_as_string()
 
-    passport_image = Image.open(io.BytesIO(bytesss))
-    user_image = Image.open(io.BytesIO(bytesss2))
+    passport_image = Image.open(io.BytesIO(passport_bytes))
+    user_image = Image.open(io.BytesIO(profile_picture_bytes))
 
     check_face_result = __check_face(passport_image, user_image)
 
     if(check_face_result[0]):
         # Passed the first check, verify the user's face matches their
         # passport now to verify date of biheaders = {'content-type': 'application/json'}rth and driving license number.
-        return __verify_age(io.BytesIO(bytesss), job)            
+        return __verify_age(io.BytesIO(passport_bytes), job)            
     else:
         return check_face_result
 

@@ -1,8 +1,11 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using DataLayer.SQL;
+using DataModels;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -24,9 +27,9 @@ namespace IDAnywhereAPI
       using var scope = host.Services.CreateScope();
       var services = scope.ServiceProvider;
 
+      var context = services.GetRequiredService<ApiContext>();
       try
       {
-        var context = services.GetRequiredService<ApiContext>();
         context.Database.EnsureCreated();
       }
       catch (Exception ex)
@@ -34,6 +37,24 @@ namespace IDAnywhereAPI
         var logger = services.GetRequiredService<ILogger>();
         logger.Error(ex, "An error occurred creating the DB.");
       }
+
+      if (!context.Roles.Any())
+      {
+        SeedRoles(context.Roles);
+        context.SaveChanges();
+      }
+    }
+
+    private static void SeedRoles(DbSet<RoleDM> roles)
+    {
+      RoleDM[] standardRoles = new RoleDM[2] { new RoleDM()
+        {
+          Name = "User",
+        }, new RoleDM()
+        {
+          Name = "Admin",
+        }};
+      roles.AddRange(standardRoles);      
     }
 
     public static IHostBuilder CreateHostBuilder(string[] args)

@@ -79,7 +79,22 @@ namespace DataLayer.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Job");
+                    b.ToTable("Jobs");
+                });
+
+            modelBuilder.Entity("DataModels.RoleDM", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("DataModels.UserDM", b =>
@@ -122,13 +137,27 @@ namespace DataLayer.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("RoleID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
+                    b.HasIndex("RoleID");
+
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("DataModels.UserDM", b =>
+                {
+                    b.HasOne("DataModels.RoleDM", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

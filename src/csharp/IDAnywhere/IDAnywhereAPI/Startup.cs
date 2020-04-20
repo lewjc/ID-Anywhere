@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using IDAnywhereAPI.MappingProfiles;
 using IDAnywhereAPI.ServiceExtensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -20,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using ServiceLayer;
+using ServiceLayer.CodeVault;
 using ServiceLayer.Implementations;
 using ServiceLayer.Interfaces;
 
@@ -37,7 +40,19 @@ namespace IDAnywhereAPI
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddCors();
+      var verificationServiceHosts =  Configuration.GetSection("AppSettings:VerificationServiceHosts").Get<List<string>>().ToArray();
+      services.AddCors(x =>
+      {
+        x.AddDefaultPolicy(y => y.AllowAnyOrigin().AllowAnyMethod().AllowAnyMethod());
+        x.AddPolicy("InternalVerificationService", y => y.WithMethods("post").AllowAnyHeader().WithOrigins(verificationServiceHosts));
+      });
+
+      services.Configure<RequestLocalizationOptions>(options =>
+      {
+        options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("en-GB");
+        options.SupportedCultures = new List<CultureInfo> { new CultureInfo("en-GB") };
+      });
+
       services.AddControllers();
       services.Configure<ApiBehaviorOptions>(options =>
       {
@@ -75,7 +90,7 @@ namespace IDAnywhereAPI
       services.AddAutoMapper(options =>
       {
         options.AddProfile<ViewModelMappingProfile>();
-      }, typeof(Startup));
+      }, typeof(Startup)); 
 
       services.AddSerilogServices();
       services.Configure<RouteOptions>(x =>
@@ -85,7 +100,10 @@ namespace IDAnywhereAPI
       services.AddScoped<ISignupService, SignupService>();
       services.AddScoped<ILoginService, LoginService>();
       services.AddScoped<IUploadService, UploadService>();
+      services.AddScoped<ICodeService, CodeService>();
+      services.AddScoped<IFinalJobPreperationService, FinalJobPreperationService>();
       services.AddScoped<IMongoWorkQueue, MongoWorkQueue>();
+      services.AddSingleton<ICodeVault, CodeVault>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -98,14 +116,8 @@ namespace IDAnywhereAPI
 
       app.ConfigureExceptions(logger);
 
-      app.UseCors(x =>
-      {
-
-        x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-      });
-
+      app.UseCors();
       app.UseHttpsRedirection();
-
       app.UseRouting();
       app.UseAuthentication();
       app.UseAuthorization();

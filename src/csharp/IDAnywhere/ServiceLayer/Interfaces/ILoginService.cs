@@ -5,6 +5,6 @@ namespace ServiceLayer.Interfaces
 {
   public interface ILoginService
   {
-    Task<ServiceResult> AttemptLogin(LoginSM sm); 
+    Task<ServiceResult> AttemptLogin(LoginSM sm, bool biometric, string ip);
   }
 }

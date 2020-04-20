@@ -14,7 +14,6 @@ namespace ViewModels
     [Required]
     public string Password { get; set; }
 
-    [Required]
     public string AppID { get; set; }
   }
 }

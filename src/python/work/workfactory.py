@@ -36,3 +36,6 @@ class WorkFactory():
         self.__finalise_work = True
         for worker in self.__worker_pool:
             worker.join()
+
+
+

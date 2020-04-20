@@ -13,6 +13,8 @@ namespace IDAnywhereAPI.MappingProfiles
     public ServiceModelMappingProfile()
     {
       CreateMap<SignUpSM, UserDM>();
+      CreateMap<JobSM, JobDM>().ReverseMap();
+
     }
   }
 }
