@@ -29,6 +29,7 @@ class _ProfilePageState extends State<ProfilePage>
   bool _downloading = false;
   String _verificationStatus;
   double _progess = 0;
+  bool _uploading = false;
   Image _profilePicture;
   String _name;
   // If the user does not have an image, then set up  load Icon
@@ -154,10 +155,14 @@ class _ProfilePageState extends State<ProfilePage>
           this._profilePicture = null;
         });
       });
+      setState(() {
+          this._uploading = true;
+        });
 
       uploadTask.onComplete.then((complete) async {
         setState(() {
           this.imageSet = true;
+          this._uploading = false;
         });
         await resolver<FlutterSecureStorage>()
             .write(key: Flags.photoUploaded, value: "true");
@@ -272,7 +277,7 @@ class _ProfilePageState extends State<ProfilePage>
       color: Colors.white,
       child: Ink(
         decoration: BoxDecoration(
-            border: Border.all(color: Colors.pinkAccent, width: 3.0),
+            border: Border.all(color: Colors.pinkAccent, width: 3),
             color: Colors.white,
             shape: BoxShape.circle,
             image: this.imageSet
@@ -282,16 +287,16 @@ class _ProfilePageState extends State<ProfilePage>
         child: InkWell(
           //This keeps the splash effect within the circle
           borderRadius: BorderRadius.circular(
-              1000.0), //Something large to ensure a circle
+              500.0), //Something large to ensure a circle
           onTap: this.imageSet ? null : getImage,
           splashColor: Colors.pink[100],
           child: Padding(
-              padding: EdgeInsets.all(this.imageSet ? 100 : this._downloading ? 81 : 78),
+              padding: EdgeInsets.all(this.imageSet ? 100 : this._downloading || this._uploading ? 82 : 78),
               child: this.imageSet
                   ? null
                   : this._downloading
                       ? CircularProgressIndicator()
-                      : Column(children: [
+                      : this._uploading ? CircularProgressIndicator() : Column(children: [
                           Icon(
                             Icons.cloud_upload,
                             size: 20.0,
@@ -300,6 +305,10 @@ class _ProfilePageState extends State<ProfilePage>
                           SizedBox(height: 10),
                           Text(
                             "Upload Profile Picture",
+                            style: TextStyle(
+                              fontSize:14, 
+                              color: Colors.pink,
+                              fontWeight: FontWeight.bold),
                           )
                         ])),
         ),

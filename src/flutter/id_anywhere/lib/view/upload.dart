@@ -65,6 +65,7 @@ class _UploadPageState extends State<UploadPage> {
           title: 'Passport',
           validateImageCallback: passportService.verify,
           flag: Flags.passportUploaded,
+          informationDialog: passport(),
           complete: widget.passportUploaded
         ),
         Spacer(),
@@ -85,7 +86,7 @@ class _UploadPageState extends State<UploadPage> {
           borderRadius: new BorderRadius.circular(10.0),
         ),
         title: Text(
-          "Back of license image requirements:",
+          "${isFront ? "Front" : "Back"} of license image requirements:",
           style: TextStyle(fontSize: 20, color: Colors.white),
         ),
         children: <Widget>[
@@ -166,13 +167,13 @@ class _UploadPageState extends State<UploadPage> {
         ],
       );
 
-  SimpleDialog passportDialog() => SimpleDialog(
+  SimpleDialog passport() => SimpleDialog(
         backgroundColor: Colors.black,
         shape: RoundedRectangleBorder(
           borderRadius: new BorderRadius.circular(10.0),
         ),
         title: Text(
-          "Back of license image requirements:",
+          "Passport image requirements:",
           style: TextStyle(fontSize: 20, color: Colors.white),
         ),
         children: <Widget>[
@@ -222,7 +223,17 @@ class _UploadPageState extends State<UploadPage> {
                   style: TextStyle(color: Colors.white, fontSize: 25),
                 ),
                 title: Text(
-                  "Ensure there is no glare and all information is clearly and perfectly visible.",
+                  "Ensure there is no glare and all information is clearly and perfectly visible.",                
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+               ListTile(
+                leading: Text(
+                  "-",
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+                title: Text(
+                  "(Taking this photo in natural light works best)",                
                   style: TextStyle(color: Colors.white),
                 ),
               ),

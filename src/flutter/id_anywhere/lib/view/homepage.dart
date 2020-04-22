@@ -16,7 +16,7 @@ class HomePage extends StatefulWidget {
   State createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<bool> onBackPress() async {
@@ -28,9 +28,17 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   bool backOfLicenseUploaded = false;
   bool frontOfLicenseUploaded = false;
 
+  TabController _controller;
+
   @override
   void initState() {
-    // TODO: implement initState
+    this._controller =  TabController(length: 3, vsync: this);
+    this._controller.addListener(checkUploadValues);
+    checkUploadValues();
+    super.initState();
+  }
+
+  void checkUploadValues(){
     final storage = resolver<FlutterSecureStorage>();    
     Future.wait([
       storage.read(key: Flags.passportUploaded),
@@ -43,14 +51,13 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
         this.frontOfLicenseUploaded =  values[2] != null && values[2].isNotEmpty;
       });
     });
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: onBackPress,
-        child: DefaultTabController(
+        child: DefaultTabController(        
             length: 3,
             child: Scaffold(
               appBar: AppBar(
@@ -78,7 +85,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                         ))
                   ],
                 ),
-                bottom: TabBar(tabs: [
+                bottom: TabBar(controller: this._controller,tabs: [
                   Tab(text: "Profile", icon: Icon(Icons.account_circle)),
                   Tab(
                     text: "Upload",
@@ -88,6 +95,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                 ]),
               ),
               body: TabBarView(
+                controller: _controller,
                 children: [
                   ProfilePage(),
                   UploadPage(this.passportUploaded, this.backOfLicenseUploaded, this.frontOfLicenseUploaded),

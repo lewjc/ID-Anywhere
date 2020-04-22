@@ -34,20 +34,25 @@ class VerifyLicenseService {
     // then extract appropriate information, t  o validate this is a license.
     ServiceResult result = new ServiceResult();
     LicenseModel model = new LicenseModel();
-    final text = await this.getTextFromImage(image);
-    for (int i = 0; i < text.blocks.length; i++) {
-      TextBlock block = text.blocks[i];
-      for (int j = 0; j < block.lines.length; j++) {
-        TextLine line = block.lines[j];
-        print(line.text);
-        List<String> lineInfo = line.text.split(" ");
-        String indicator = lineInfo[0].replaceAll(".", "");
-        if (this.desiredLineIndicators.keys.contains(indicator)) {
-          // The line indicator is one we are looking for, run the desired function assoicated with it.
-          // We then store the string in the model.
-          this.desiredLineIndicators[indicator](i, j, text, model);
+    try{
+      final text = await this.getTextFromImage(image);
+      for (int i = 0; i < text.blocks.length; i++) {
+        TextBlock block = text.blocks[i];
+        for (int j = 0; j < block.lines.length; j++) {
+          TextLine line = block.lines[j];
+          print(line.text);
+          List<String> lineInfo = line.text.split(" ");
+          String indicator = lineInfo[0].replaceAll(".", "");
+          if (this.desiredLineIndicators.keys.contains(indicator)) {
+            // The line indicator is one we are looking for, run the desired function assoicated with it.
+            // We then store the string in the model.
+            this.desiredLineIndicators[indicator](i, j, text, model);
+          }
         }
       }
+    } catch(e){    
+      result.errors.add("Not all information could be extracted. Please provide a clearer image of your license.");
+      return result;
     }
     if (model.isValid()) {
       return await this.postModel(model, image, "/api/upload/licensefront",
@@ -63,18 +68,18 @@ class VerifyLicenseService {
     // This should scan the license image,
     // then extract appropriate information, to validate this is a license.
     ServiceResult result = new ServiceResult();
-    
-     StorageReference cloudStorage =
+     
+    StorageReference cloudStorage =
           await FirebaseConnection().getUserStorageReference();
-      cloudStorage = cloudStorage
-          .child(DeviceInfoHelper.hashId(await DeviceInfoHelper.getDeviceId()));
-      final StorageUploadTask uploadTask =
-          cloudStorage.child("license_back").putFile(image);
+    cloudStorage = cloudStorage
+        .child(DeviceInfoHelper.hashId(await DeviceInfoHelper.getDeviceId()));
+    final StorageUploadTask uploadTask =
+        cloudStorage.child("license_back").putFile(image);
 
-      uploadTask.onComplete.then((complete) async {
-        await resolver<FlutterSecureStorage>()
-            .write(key: Flags.backLicenseUploaded, value: "true");
-      });
+    uploadTask.onComplete.then((complete) async {
+      await resolver<FlutterSecureStorage>()
+          .write(key: Flags.backLicenseUploaded, value: "true");
+    });
 
     String url = GlobalConfiguration().getString("api_url");
     url = "$url/api/upload/licenseback";
@@ -118,7 +123,7 @@ class VerifyLicenseService {
 
       uploadTask.onComplete.then((complete) async {
         await resolver<FlutterSecureStorage>()
-            .write(key: Flags.passportUploaded, value: "true");
+            .write(key: flag, value: "true");
       });
       return result;
     } else if (response.statusCode == 401) {

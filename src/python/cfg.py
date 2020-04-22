@@ -1,0 +1,6 @@
+config = {
+    'firebase': {
+        'email': '',
+        'password': '',
+    }
+}

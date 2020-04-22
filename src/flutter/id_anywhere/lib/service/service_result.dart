@@ -1,7 +1,7 @@
 class ServiceResult{
-  ServiceResult({this.errors=const[]});
+  ServiceResult({List<String> errors}) : errors = errors ?? [];
 
-  List<dynamic> errors = [];
+  List<String> errors = [];
 
   bool valid () => this.errors.isEmpty;
 

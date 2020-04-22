@@ -25,6 +25,8 @@ class LocalAuthenticationService {
         print(e);        
       }
     }
+    
     return false;
   }
 }
+  
