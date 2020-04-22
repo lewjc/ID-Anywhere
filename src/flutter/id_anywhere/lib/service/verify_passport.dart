@@ -45,15 +45,15 @@ class VerifyPassportService {
      * If the block contains the 
      * 
      */
+
     final result = new ServiceResult();
-    final TextRecognizer textRecognizer =
-        FirebaseVision.instance.textRecognizer();
-    bool passportNumberExtracted = false;
+    TextRecognizer textRecognizer;
     try {
+       textRecognizer = FirebaseVision.instance.textRecognizer();
+      bool passportNumberExtracted = false;
       final FirebaseVisionImage firebaseImage =
           FirebaseVisionImage.fromFile(image);
       final text = await textRecognizer.processImage(firebaseImage);
-
       String mrz = this.extractMRZ(text);
       // If mrz length is 88.
 
@@ -89,15 +89,15 @@ class VerifyPassportService {
       }
 
       // Run all of the validators.
-      return this.finaliseValidation(mrz, image);
+      return await this.finaliseValidation(mrz, image);
     } catch (e) {
       print(e);
+      result.errors.add(
+          "Not all information could be extracted. Please provide a clearer image of your passport.");
+      return result;      
     } finally {
-      textRecognizer.close();
+      textRecognizer?.close();
     }
-    result.errors.add(
-        "Image was not clear enough, not all information could be analyzed.");
-    return result;
   }
 
   Future<bool> checkForPassportNumber(String text) async {
@@ -116,7 +116,7 @@ class VerifyPassportService {
     });
   }
 
-  Future<List<bool>> testThresholds(String text) async {
+  Future<List<bool>> testThresholds(String text) async {    
     return await Future.wait([
       LevenshteinAlgorithm.run(validators[1].desiredString, text,
           validators[1].levenshteinThreshold),
@@ -158,6 +158,15 @@ class VerifyPassportService {
     final firstname = extractFirstName(this.validators[2].resultText);
     final dateOfBirth = validateDateOfBirth(this.validators[3].resultText);
     final expiry = validateExpiry(this.validators[4].resultText);
+
+    if(dateOfBirth == null){
+      // get input for this
+    }
+
+    if(expiry == null){
+      // get input for this.
+    }
+
     mrz = mrz.length == 88 ? mrz : null;
 
     final model = PassportModel(
@@ -226,23 +235,27 @@ class VerifyPassportService {
 
   DateTime validateExpiry(String text) {
     // Extract and turn into date
-    List<String> split = text.split(" ");
+    try{
+      List<String> split = text.split(" ");
 
-    int day = int.tryParse(split[0]);
-    int month = DateHelper.parseMonth(split[1]);
+      int day = int.tryParse(split[0]);
+      int month = DateHelper.parseMonth(split[1]);
 
-    for (int i = 2; i < split.length; i++) {
-      var parseable = int.tryParse(split[i]);
-      if (parseable != null) {
-        int year = int.tryParse("20" + split[i]);
+      for (int i = 2; i < split.length; i++) {
+        var parseable = int.tryParse(split[i]);
+        if (parseable != null) {
+          int year = int.tryParse("20" + split[i]);
 
-        DateTime expiry = DateTime(year, month, day);
-        if (expiry.isBefore(DateTime.now())) {
-          // The passport submitted was expired. show this.
-          return null;
+          DateTime expiry = DateTime(year, month, day);
+          if (expiry.isBefore(DateTime.now())) {
+            // The passport submitted was expired. show this.
+            return null;
+          }
+          return expiry;
         }
-        return expiry;
       }
+    } on Exception {
+      return null;
     }
     return null;
   }
@@ -252,6 +265,14 @@ class VerifyPassportService {
     List<String> dobSplit = text.split(" ");
     var day = int.tryParse(dobSplit[0]);
     int month = DateHelper.parseMonth(dobSplit[1]);
+    
+    if(month == 0){
+      month = DateHelper.parseMonth(dobSplit[1].substring(0, 3));
+      if(month == 0){
+        return null;
+      }
+    }
+
     for (int i = 2; i < dobSplit.length; i++) {
       var parseable = int.tryParse(dobSplit[i]);
       if (parseable != null) {
@@ -261,7 +282,7 @@ class VerifyPassportService {
           yearPrefix = "19";
         }
         int year = int.tryParse("$yearPrefix$parseable");
-        return DateTime(year, month, day);
+        return DateTime(year, month, day).add(Duration(hours: 6));
       }
     }
 

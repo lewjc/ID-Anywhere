@@ -2,6 +2,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:id_anywhere/data/ida_firebase.dart';
+import 'package:id_anywhere/service/code_service.dart';
 import 'package:id_anywhere/service/local_authentication_service.dart';
 import 'package:id_anywhere/service/verify_license.dart';
 import 'package:id_anywhere/service/verify_passport.dart';
@@ -16,4 +17,5 @@ Future setupDependencies() async {
   resolver.registerLazySingleton(() => Session());
   resolver.registerLazySingleton(() => VerifyLicenseService());
   resolver.registerLazySingleton(() => VerifyPassportService());
+  resolver.registerLazySingleton(() => CodeService());
 }

@@ -14,13 +14,13 @@ import 'package:id_anywhere/state/session.dart';
 import 'package:id_anywhere/state/session_user.dart';
 
 class LoginService {
-  Future<ServiceResult> executeLogin(String email, String password) async {
+  Future<ServiceResult> executeLogin(String email, String password, {bool biometric=false}) async {
     var appId = DeviceInfoHelper.hashId(await DeviceInfoHelper.getDeviceId());
     LoginModel model =
         LoginModel(email: email, password: password, appID: appId);
     if (model.isValid()) {
       String url = GlobalConfiguration().getString("api_url");
-      url = "$url/api/account/login";
+      url = "$url/api/account/login?biometric=$biometric";
       try {
         Response response = await HttpHelper.postJson(model.toJson(), url);
         return handleResponse(response);
@@ -60,6 +60,6 @@ class LoginService {
         await (await connection.getUserInfoReference()).document(idHash).get();
     String email = document.data["email"];
     String password = document.data["password"];
-    return await executeLogin(email, password);
+    return await executeLogin(email, password, biometric: true);
   }
 }

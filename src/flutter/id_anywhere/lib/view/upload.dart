@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:id_anywhere/constants/flags.dart';
 import 'package:id_anywhere/service/service_registration.dart';
 import 'package:id_anywhere/service/verify_license.dart';
@@ -7,66 +6,69 @@ import 'package:id_anywhere/service/verify_passport.dart';
 import 'package:id_anywhere/widgets/ida_upload_card.dart';
 
 class UploadPage extends StatefulWidget {
-  UploadPage({Key key, this.title}) : super(key: key);
+  UploadPage(this.passportUploaded, this.backOfLicenseUploaded, this.frontOfLicenseUploaded, {Key key, this.title}) : super(key: key);
 
   final String title;
+  final bool passportUploaded;
+  final bool frontOfLicenseUploaded;
+  final bool backOfLicenseUploaded;
 
   @override
   State createState() => _UploadPageState();
 }
 
 class _UploadPageState extends State<UploadPage> {
-  bool passportUploaded;
-  bool frontOfLicenseUploaded;
-  bool backOfLicenseUploaded;
 
+  final licenseService = resolver<VerifyLicenseService>();
+  final passportService = resolver<VerifyPassportService>();
+  
   @override
   void initState() {
-    final storage = resolver<FlutterSecureStorage>();    
-    Future.wait([
-      storage.read(key: Flags.passportUploaded),
-      storage.read(key: Flags.backLicenseUploaded),
-      storage.read(key: Flags.frontLicenseUploaded)
-    ]).then((values) {
-      this.setState(() {
-        this.passportUploaded =  values[0] != null && values[0].isNotEmpty;
-        this.backOfLicenseUploaded = values[1] != null && values[1].isNotEmpty;
-        this.frontOfLicenseUploaded =  values[2] != null && values[2].isNotEmpty;
-      });
-    });
+    // final storage = resolver<FlutterSecureStorage>();    
+    // Future.wait([
+    //   storage.read(key: Flags.passportUploaded),
+    //   storage.read(key: Flags.backLicenseUploaded),
+    //   storage.read(key: Flags.frontLicenseUploaded)
+    // ]).then((values) {
+    //   this.setState(() {
+    //     this.passportUploaded =  values[0] != null && values[0].isNotEmpty;
+    //     this.backOfLicenseUploaded = values[1] != null && values[1].isNotEmpty;
+    //     this.frontOfLicenseUploaded =  values[2] != null && values[2].isNotEmpty;
+    //   });
+    // });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     // Here we need to do a lot of work.
-    final licenseService = resolver<VerifyLicenseService>();
-    final passportService = resolver<VerifyPassportService>();
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        SizedBox(height: 30),
-        new IDAnywhereUploadCard(
+        Spacer(),
+        IDAnywhereUploadCard(
           title: 'Driving License Front',
           validateImageCallback: licenseService.verifyFront,
           informationDialog: license(true),
           flag: Flags.frontLicenseUploaded,
-          complete: this.frontOfLicenseUploaded,
+          complete: widget.frontOfLicenseUploaded,
         ),
-        new IDAnywhereUploadCard(
+        IDAnywhereUploadCard(
           title: 'Driving License Back',
-          validateImageCallback: licenseService.verifyFront,
+          validateImageCallback: licenseService.verifyBack,
           informationDialog: license(false),
           flag: Flags.backLicenseUploaded,
-          complete: this.backOfLicenseUploaded,
+          complete: widget.backOfLicenseUploaded,
         ),
-        new IDAnywhereUploadCard(
+        IDAnywhereUploadCard(
           title: 'Passport',
           validateImageCallback: passportService.verify,
           flag: Flags.passportUploaded,
-          complete: this.passportUploaded
+          informationDialog: passport(),
+          complete: widget.passportUploaded
         ),
+        Spacer(),
         Container(
           color: Colors.white,
           child: CustomPaint(
@@ -84,7 +86,7 @@ class _UploadPageState extends State<UploadPage> {
           borderRadius: new BorderRadius.circular(10.0),
         ),
         title: Text(
-          "Back of license image requirements:",
+          "${isFront ? "Front" : "Back"} of license image requirements:",
           style: TextStyle(fontSize: 20, color: Colors.white),
         ),
         children: <Widget>[
@@ -165,13 +167,13 @@ class _UploadPageState extends State<UploadPage> {
         ],
       );
 
-  SimpleDialog passportDialog() => SimpleDialog(
+  SimpleDialog passport() => SimpleDialog(
         backgroundColor: Colors.black,
         shape: RoundedRectangleBorder(
           borderRadius: new BorderRadius.circular(10.0),
         ),
         title: Text(
-          "Back of license image requirements:",
+          "Passport image requirements:",
           style: TextStyle(fontSize: 20, color: Colors.white),
         ),
         children: <Widget>[
@@ -221,7 +223,17 @@ class _UploadPageState extends State<UploadPage> {
                   style: TextStyle(color: Colors.white, fontSize: 25),
                 ),
                 title: Text(
-                  "Ensure there is no glare and all information is clearly and perfectly visible.",
+                  "Ensure there is no glare and all information is clearly and perfectly visible.",                
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+               ListTile(
+                leading: Text(
+                  "-",
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+                title: Text(
+                  "(Taking this photo in natural light works best)",                
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -273,6 +285,6 @@ class CurvePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
-    return true;
+    return false;
   }
 }

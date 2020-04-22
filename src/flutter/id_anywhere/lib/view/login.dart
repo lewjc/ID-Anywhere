@@ -42,9 +42,10 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  Future<bool> attemptLocalAuth() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();    
-    if (prefs.getBool(Flags.useLocalAuth) ?? false) {
+  Future<bool> attemptLocalAuth({bool override=false}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();  
+    
+    if (override || (prefs.getBool(Flags.useLocalAuth) ?? false)) {
       final LocalAuthenticationService _localAuth =
           resolver<LocalAuthenticationService>();
       bool authorised =
@@ -156,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                         children: <Widget>[
                           IDAnywhereButton(text: "Submit", onPressed: login),
                           RawMaterialButton(
-                            onPressed: attemptLocalAuth,
+                            onPressed:()=> attemptLocalAuth(override: true),
                             highlightColor: Colors.pink,
                             child: new Icon(
                               Icons.fingerprint,
