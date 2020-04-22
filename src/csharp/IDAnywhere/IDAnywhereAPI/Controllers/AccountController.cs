@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer;
 using ServiceLayer.Interfaces;
@@ -54,7 +55,7 @@ namespace IDAnywhereAPI.Controllers
       return new StatusCodeResult(400);
     }
 
-    [HttpPost]
+    [HttpPost] 
     [AllowAnonymous]
     public async Task<ActionResult> Login(LoginVM vm)
     {
@@ -75,6 +76,13 @@ namespace IDAnywhereAPI.Controllers
       }
 
       return new StatusCodeResult(400);
+    }
+
+    [EnableCors()]
+    public async Task<ActionResult> Validate(bool result)
+    {
+
+      return Ok();
     }
 
     [HttpGet]

@@ -1,0 +1,52 @@
+﻿@model JobsViewModel
+@{
+  ViewData["Title"] = "Jobs";
+  Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12 text-center" style="overflow:scroll; overflow-x: hidden;
+ max-height: 75vh; min-height: 75vh">
+      <h1>Jobs</h1>
+      <div class="list-group" id="jobs-list">
+
+        @foreach (var job in Model.JobsList)
+        {
+          <a asp-action="ProcessJob" asp-route-id="@job.ID" list-group-item list-group-item-action active">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">@job.ClaimedFirstName @job.ClaimedLastName</h5>
+              <small>@job.Created.Date.ToLongDateString()</small>
+            </div>
+            <p class="mb-1">Please Complete this job by @job.Created.AddDays(7).Date.ToLongDateString()</p>
+            <small>@job.GetHashCode()</small>
+          </a>
+        }
+      </div>
+    </div>
+  </div>
+  <br/>
+  <div class="row">
+    <div class="col-sm-12 ">
+      <nav aria-label="...">
+        <ul class="pagination justify-content-center">
+          <li class="page-item disabled">
+            <span class="page-link">Previous</span>
+          </li>
+          <li class="page-item"><a class="page-link" href="#">1</a></li>
+          <li class="page-item active" aria-current="page">
+            <span class="page-link">
+              2
+              <span class="sr-only">(current)</span>
+            </span>
+          </li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

@@ -48,6 +48,9 @@ namespace ServiceLayer.Implementations
       {
         string token = GenerateJwt(user);
         ServiceResult.Values.Add("token", token);
+        ServiceResult.Values.Add("firstname", user.FirstName);
+        ServiceResult.Values.Add("status", user.Status.ToString());
+
       }
 
       return ServiceResult;
@@ -63,7 +66,8 @@ namespace ServiceLayer.Implementations
       {
         Subject = new ClaimsIdentity(new Claim[]
         {
-            new Claim(ClaimTypes.Name, user.ID.ToString())
+          new Claim(ClaimTypes.Name, user.ID.ToString()),
+          new Claim("AppID", user.AppID)
         }),
         Expires = DateTime.UtcNow.AddHours(1),
         SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
