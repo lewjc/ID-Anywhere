@@ -97,5 +97,22 @@ namespace WebApp.Controllers
         return View();
       }
     }
+
+    [HttpGet]
+    public ActionResult CreateAdmin()
+    {
+      return View(new CreateAdminVM());
+    }
+
+    [HttpPost]
+    public async Task<ActionResult> CreateAdmin(CreateAdminVM vm) 
+    {
+      if (ModelState.IsValid)
+      {
+        return Ok();
+      }
+
+      return BadRequest();
+    }
   }
 }

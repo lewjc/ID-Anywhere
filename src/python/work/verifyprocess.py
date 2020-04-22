@@ -34,3 +34,5 @@ class VerifyProcessWorker():
 
     def __process_job(self, job):        
         update_user_status(*verify(job), id=job["UserId"])
+
+

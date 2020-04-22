@@ -1,5 +1,6 @@
 ﻿using Dependency.Enums;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataModels
 {
@@ -26,6 +27,13 @@ namespace DataModels
     public bool Locked { get; set; } = false;
 
     public string AppID { get; set; }
+
+    public DateTime? DateOfBirth { get; set; }
+
+    [ForeignKey("Role")]
+    public int RoleID{ get; set; }
+
+    public RoleDM Role { get; set; }
 
   }
 }

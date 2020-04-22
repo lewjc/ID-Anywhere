@@ -98,7 +98,6 @@ namespace ServiceLayer.Implementations
         user.DateOfBirth = dateOfBirth;
 
         // TODO: Delete the images.
-         
 
         return await Db.SaveChangesAsync() == 1;
       }

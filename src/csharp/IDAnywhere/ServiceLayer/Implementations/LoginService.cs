@@ -8,6 +8,7 @@ using Serilog;
 using ServiceLayer.Interfaces;
 using ServiceModels;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -26,17 +27,28 @@ namespace ServiceLayer.Implementations
       this.configuration = configuration;
     }
 
-    public async Task<ServiceResult> AttemptLogin(LoginSM sm)
+    public async Task<ServiceResult> AttemptLogin(LoginSM sm, bool biometric, string ip)
     {
-      var user = await Db.Users.FirstOrDefaultAsync(x =>
+      if (!biometric)
+      {
+        using var hasher = new SHA512Managed();
+        var codeBytes = Encoding.UTF8.GetBytes(sm.Password);
+        var password = hasher.ComputeHash(codeBytes);
+        sm.Password = BitConverter.ToString(password).Replace("-", string.Empty).ToLower();
+      }
+
+      var user = await Db.Users.Include(x => x.Role).FirstOrDefaultAsync(x =>
         x.Email.ToLower().Equals(sm.Email.ToLower()) &&
         x.Password.Equals(sm.Password));
+
+      var ips = configuration.GetSection("AppSettings:WebAppIps").Get<List<string>>();
+      var isBypass = ips.Contains(ip);
 
       if (user == null)
       {
         ServiceResult.Errors.Add("Email or password is incorrect.");
       }
-      else if (user.AppID != sm.AppID)
+      else if (user.AppID != sm.AppID && !isBypass)
       {
         ServiceResult.Errors.Add("The device you are logging in from is not the one bound to your account.");
       }
@@ -50,7 +62,6 @@ namespace ServiceLayer.Implementations
         ServiceResult.Values.Add("token", token);
         ServiceResult.Values.Add("firstname", user.FirstName);
         ServiceResult.Values.Add("status", user.Status.ToString());
-
       }
 
       return ServiceResult;
@@ -67,7 +78,8 @@ namespace ServiceLayer.Implementations
         Subject = new ClaimsIdentity(new Claim[]
         {
           new Claim(ClaimTypes.Name, user.ID.ToString()),
-          new Claim("AppID", user.AppID)
+          new Claim("AppID", user.AppID),
+          new Claim(ClaimTypes.Role, user.Role.Name)
         }),
         Expires = DateTime.UtcNow.AddHours(1),
         SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

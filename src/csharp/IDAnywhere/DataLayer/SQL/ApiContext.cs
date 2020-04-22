@@ -12,6 +12,10 @@ namespace DataLayer.SQL
 
     public DbSet<UserDM> Users { get; set; }
 
+    public DbSet<JobDM> Jobs { get; set; }
+
+    public DbSet<RoleDM> Roles { get; set; }
+
     public ApiContext(DbContextOptions<ApiContext> options) : base(options)
     {
 
@@ -21,6 +25,8 @@ namespace DataLayer.SQL
     {
       modelBuilder.Entity<UserDM>().Property(u => u.Status).HasConversion<string>();
       modelBuilder.Entity<UserDM>().ToTable("User");
+      modelBuilder.Entity<JobDM>().ToTable("Jobs");
+      modelBuilder.Entity<RoleDM>().ToTable("Roles");
 
       base.OnModelCreating(modelBuilder);
     }
