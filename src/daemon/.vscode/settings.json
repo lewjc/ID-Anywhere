@@ -1,0 +1,7 @@
+{
+  "python.pythonPath": "/Users/Lew/Documents/Uni/3/IdAnywhere/ID-Anywhere/src/python/venv/bin/python3",
+  "python.linting.pylintEnabled": false,
+  "python.linting.pycodestyleEnabled": true,
+  "python.linting.enabled": true,
+  "discord.enabled": true
+}

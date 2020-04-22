@@ -1,0 +1,33 @@
+﻿@model CreateAdminVM;
+
+@{
+  ViewData["Title"] = "CreateAdmin";
+  Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+  <form class="container form-group text-center">
+    <div class="row">
+      <div class="col-sm-12">
+        <h1>Create Administrator Account</h1>
+      </div>
+    </div>
+    <br/>
+    <div class="row">
+      <div class="col-sm-12">
+        <input asp-for="Username" type="text" class="form-control" autocomplete="off" />
+      </div>
+    </div>
+    <br />
+    <div class="row">
+      <div class="col-sm-12">
+        <input asp-for="Password" type="password" class="form-control" autocomplete="off"/>
+      </div>
+    </div>
+    <br />
+    <div class="row">
+      <div class="col-sm-12">
+        <button type="submit" class="btn btn-block">Submit</button>
+      </div>
+    </div>
+  </form>
+
