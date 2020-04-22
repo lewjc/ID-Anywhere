@@ -1,5 +1,5 @@
 from PIL import Image
-from utility.ImageManipulation import ConvertImageToBW
+from utility.ImageManipulation import ConvertImageToBW, ConvertImageBytesToBW
 import utility.FacialRecognition as fr
 from utility.TextManipulation import extract_driving_license_info
 from requests import post
@@ -12,18 +12,39 @@ import re
 r_compiled = re.compile(r'^[A-Z9]{5}\d{6}[A-Z9]{2}\d$', re.X)
 
 
-def verify(passport_image_bytes, user_image_bytes,
-           driving_license_image_bytes):
+def verify(job):
+
+    passport_image_bytes = job["passport_bytes"]
+    user_image_bytes = job["user_image_bytes"]
+    driving_license_image_bytes = job["license_image_bytes"]
+
+    # passport_width = job["passport_size"]["width"]
+    # passport_height = job["passport_size"]["height"]
+
+    # license_width = job["license_size"]["width"]
+    # license_height = job["license_size"]["height"]
+
+    # user_width = job["user_size"]["width"]
+    # user_height = job["user_size"]["height"]
+
     # Convert the byte strings to images
+    # passport_image = Image.frombytes("RGB", (int(passport_width),
+    #                                          int(passport_height)),
+    #                                  passport_image_bytes)
+
+    # user_image = Image.frombytes("RGB", (int(user_width),
+    #                                      int(user_height)),
+    #                              user_image_bytes)
+
+    # driving_license_image = Image.frombytes("RGB", (int(license_width),
+    #                                                 int(license_height)),
+    #                                         driving_license_image_bytes)
     passport_image = Image.open(io.BytesIO(passport_image_bytes))
     user_image = Image.open(io.BytesIO(user_image_bytes))
     driving_license_image = Image.open(
         io.BytesIO(driving_license_image_bytes))
-
     check_face_result = __check_face(passport_image, user_image)
-    print(check_face_result)
-
-    if(check_face_result is bool):
+    if(check_face_result[0]):
         # Passed the first check, verify the user's face matches their
         # passport now to verify date of birth and driving license number.
         __verify_age(passport_image_bytes, driving_license_image)
@@ -51,21 +72,25 @@ def update_user_status(verified, response_message, guid):
             print("status code returned {}. expected 200 OK".format(
                 response.status_code))
     except Exception as e:
+        print("verify.update_user_status error")
         print(str(e))
 
 
 def __check_face(passport_image, user_image):
     try:
-        result = fr.compare_faces(passport_image, user_image),
+        print("checking face")
+        result = fr.compare_faces(passport_image, user_image)
         if(result):
+            print("verified face good")
             return (result, "Passport + Image identified")
-
+        print("verified face bad")
         return (result, "Passport + Image not identified")
 
     except Exception as e:
         # Get the error message, then return that from our endpoint with an
         # error stating that the user's picutre upload was unexceptable using
         # str(e)
+        print("verify.__check_face error")
         print(e)
         return (False, "Error")
 
@@ -76,44 +101,53 @@ def __verify_age(passport_image_bytes, driving_license_image):
     driving license and the passport.
 
     '''
-    passport_mrz_data = __get_passport_info(passport_image_bytes)
+    try:
 
-    if(passport_mrz_data.valid_score < 50 or
-       not passport_mrz_data.date_of_birth_valid):
-        return False
+        passport_mrz_data = __get_passport_info(
+            passport_image_bytes)
+        print("succesfully read the mrz data")
+        print(passport_mrz_data)
+        if(passport_mrz_data is None or passport_mrz_data.valid_score < 50 or
+           not passport_mrz_data.date_of_birth_valid):
+            return False
 
-    user_license_dob, user_license_number = __get_license_info(
-        driving_license_image)
+        user_license_dob, user_license_number = __get_license_info(
+            driving_license_image)
 
-    # TODO: get the information out of the MRZ and compare the two dates.
-    # possibly try and give this a trial run.
+        # TODO: get the information out of the MRZ and compare the two dates.
+        # possibly try and give this a trial run.
 
-    passport_dob = passport_mrz_data.date_of_birth
-    # Add spaces after each 2 characters in the string
-    passport_dob = " ".join(passport_dob[i:i+2]
-                            for i in range(0, len(passport_dob), 2))
+        passport_dob = passport_mrz_data.date_of_birth
+        # Add spaces after each 2 characters in the string
+        passport_dob = " ".join(passport_dob[i:i+2]
+                                for i in range(0, len(passport_dob), 2))
 
-    passport_dob = time.strptime(passport_dob, "%y %m %d")
-    license_dob = time.strptime(user_license_dob, "%d-%m-%y")
+        passport_dob = time.strptime(passport_dob, "%y %m %d")
+        license_dob = time.strptime(user_license_dob, "%d-%m-%y")
 
-    # TODO: Potentailly extract the first 5 letters of the last name from the
-    # license number and then compare that to the last name extracted from the
-    # passport mrz.
+        # TODO: Potentailly extract the first 5 letters of the last name from the
+        # license number and then compare that to the last name extracted from the
+        # passport mrz.
 
-    if(passport_dob != license_dob):
-        return False
+        if(passport_dob != license_dob):
+            return False
 
-    license_verified = __verify_driving_license_number(user_license_number)
+        license_verified = __verify_driving_license_number(user_license_number)
 
-    if(not license_verified):
+        if(not license_verified):
+            return False
+    except Exception as e:
+        print('verify age error')
+        print(e)
         return False
 
     # Verified the dates of birth from the two identify documents
 
 
-def __get_passport_info(passport_image):
-    bw_passport_photo = ConvertImageToBW(passport_image)
-    return OCR.read_mrz(bw_passport_photo)
+def __get_passport_info(passport_image_bytes):
+    bw_passport_photo = ConvertImageBytesToBW(
+        passport_image_bytes)
+    return OCR.extract_mrz(bw_passport_photo)
 
 
 def __get_license_info(driving_license_image):

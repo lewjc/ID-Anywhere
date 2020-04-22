@@ -17,7 +17,6 @@ Compares the face found in image_one_name and image_two_name to
     """
     image_one_encoding = __get_image_encoding(image_one)
     image_two_encoding = __get_image_encoding(image_two)
-    print("{} is image one".format(image_one_encoding))
     return face_recognition.compare_faces([image_one_encoding],
                                           image_two_encoding)[0]
 

@@ -34,9 +34,6 @@ class VerifyProcessWorker():
 
     def __process_job(self, job):
 
-        verified, message = verify(
-            job["passport_bytes"],
-            job["user_image_bytes"],
-            job["license_image_bytes"])
+        verified, message = verify(job)
 
         update_user_status(verified, message, job['guid'])

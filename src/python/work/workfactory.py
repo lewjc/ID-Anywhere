@@ -19,7 +19,6 @@ class WorkFactory():
         print("[INITIALISED WORK FACTORY]")
 
     def initialise(self):
-
         print("[GENERATING WORKERS]")
 
         for x in range(self.__workers):
